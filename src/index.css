@@ -1,0 +1,715 @@
+:root {
+  /* Modern High-Legibility Font Stack */
+  --font-heading: 'Outfit', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --font-body: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --font-mono: 'Space Mono', "SF Mono", "Consolas", monospace;
+  --font-digital: 'Space Mono', "Consolas", monospace;
+
+  /* Premium Fresh Canvas Palette */
+  --bg-app: #F8FAFC;
+  --bg-surface: #FFFFFF;
+  --bg-surface-elevated: #FFFFFF;
+  --bg-surface-hover: #F1F5F9;
+  --border-color: #E2E8F0;
+  --border-subtle: #F1F5F9;
+
+  --text-main: #0F172A;
+  --text-body: #334155;
+  --text-muted: #64748B;
+  --text-dim: #94A3B8;
+
+  /* Primary Brand Accent (Vibrant Electric Blue) */
+  --primary: #2563EB;
+  --primary-hover: #1D4ED8;
+  --primary-light: #EFF6FF;
+  --primary-glow: rgba(37, 99, 235, 0.18);
+
+  /* Transactional & Status Accents */
+  --accent-green: #10B981;
+  --accent-green-hover: #059669;
+  --accent-green-light: #ECFDF5;
+  --accent-green-glow: rgba(16, 185, 129, 0.2);
+  --accent-amber: #F59E0B;
+  --accent-amber-light: #FEF3C7;
+  --accent-rose: #EF4444;
+  --accent-rose-light: #FEE2E2;
+  --accent-purple: #8B5CF6;
+  --accent-purple-light: #F5F3FF;
+  --accent-cyan: #06B6D4;
+
+  /* Soft Modern Border Radius System */
+  --radius-xs: 4px;
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
+  --radius-xl: 20px;
+  --radius-full: 9999px;
+  --touch-target: 48px;
+
+  /* Shadow Elevaton System */
+  --shadow-xs: 0 1px 2px 0 rgba(15, 23, 42, 0.04);
+  --shadow-sm: 0 1px 3px 0 rgba(15, 23, 42, 0.06), 0 1px 2px -1px rgba(15, 23, 42, 0.04);
+  --shadow-md: 0 4px 8px -2px rgba(15, 23, 42, 0.08), 0 2px 4px -2px rgba(15, 23, 42, 0.04);
+  --shadow-lg: 0 12px 20px -4px rgba(15, 23, 42, 0.08), 0 4px 6px -2px rgba(15, 23, 42, 0.04);
+  --shadow-xl: 0 20px 28px -6px rgba(15, 23, 42, 0.12), 0 8px 10px -6px rgba(15, 23, 42, 0.04);
+
+  /* Transitions */
+  --ease-spring: cubic-bezier(0.2, 0.8, 0.2, 1);
+  --ease-smooth: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-out-back: cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  -webkit-tap-highlight-color: transparent;
+  font-variant-numeric: tabular-nums;
+}
+
+html, body {
+  height: 100%;
+  width: 100%;
+  font-family: var(--font-body);
+  background-color: var(--bg-app);
+  color: var(--text-main);
+  overflow-x: hidden;
+  user-select: none;
+  -webkit-user-select: none;
+  -webkit-font-smoothing: antialiased;
+}
+
+#root {
+  min-height: 100vh;
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Safe Area Inset & Status Bar Top Separation */
+.billflow-header {
+  padding-top: max(env(safe-area-inset-top, 0px), 0px);
+  box-sizing: border-box;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-heading);
+  letter-spacing: -0.015em;
+}
+
+button {
+  font-family: var(--font-body);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  outline: none;
+  cursor: pointer;
+  touch-action: manipulation;
+  transition: all 0.15s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* Button Tactile Hover & Press Physics (Stationary, zero jitter/shifting) */
+button:hover:not(:disabled) {
+  filter: brightness(0.97);
+  transform: none !important;
+}
+
+button:active:not(:disabled) {
+  filter: brightness(0.93);
+  transform: none !important;
+}
+
+button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+input, select, textarea {
+  font-family: var(--font-body);
+  background-color: var(--bg-surface);
+  border: 1px solid var(--border-color);
+  color: var(--text-main);
+  border-radius: var(--radius-md);
+  padding: 10px 14px;
+  font-size: 14px;
+  outline: none;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+input:focus, select:focus, textarea:focus {
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
+}
+
+/* Custom Scrollbars */
+::-webkit-scrollbar {
+  width: 5px;
+  height: 5px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 999px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
+}
+
+/* Utilities */
+.glass-panel {
+  background: rgba(255, 255, 255, 0.96);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid var(--border-color);
+  box-shadow: 0 10px 24px -4px rgba(16, 24, 40, 0.08), 0 2px 6px -1px rgba(16, 24, 40, 0.03);
+}
+
+.glow-btn-green {
+  background: linear-gradient(135deg, #10B981 0%, #059669 100%);
+  color: #ffffff;
+  box-shadow: 0 4px 14px 0 rgba(16, 185, 129, 0.35);
+}
+.glow-btn-green:hover:not(:disabled) {
+  background: linear-gradient(135deg, #059669 0%, #047857 100%);
+  box-shadow: 0 6px 20px 0 rgba(16, 185, 129, 0.45);
+}
+
+.glow-btn-blue {
+  background: linear-gradient(135deg, #4F46E5 0%, #4338CA 100%);
+  color: #ffffff;
+  box-shadow: 0 4px 14px rgba(79, 70, 229, 0.3);
+}
+.glow-btn-blue:hover:not(:disabled) {
+  background: linear-gradient(135deg, #4338CA 0%, #3730A3 100%);
+  box-shadow: 0 6px 20px rgba(79, 70, 229, 0.4);
+}
+
+/* ==========================================================================
+   ANIMATIONS
+   ========================================================================== */
+
+@keyframes badgePop {
+  0% { transform: scale(0.6); opacity: 0; }
+  70% { transform: scale(1.2); opacity: 1; }
+  100% { transform: scale(1); opacity: 1; }
+}
+
+.animate-badge-pop {
+  animation: badgePop 0.28s var(--ease-out-back) forwards;
+}
+
+@keyframes billItemEnter {
+  0% {
+    opacity: 0;
+    transform: translateY(10px) scale(0.98);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.animate-bill-item {
+  animation: billItemEnter 0.22s var(--ease-out-back) forwards;
+}
+
+@keyframes slideUpSpring {
+  0% {
+    transform: translateY(100%);
+    opacity: 0.6;
+  }
+  100% {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+.animate-slide-up {
+  animation: slideUpSpring 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes fadeIn {
+  0% { opacity: 0; }
+  100% { opacity: 1; }
+}
+
+.animate-fade-in {
+  animation: fadeIn 0.2s ease forwards;
+}
+
+@keyframes thermalRollIn {
+  0% {
+    opacity: 0;
+    transform: translateY(-30px) scale(0.95);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.font-mono-receipt {
+  font-family: 'Space Mono', monospace;
+}
+
+.font-digital {
+  font-family: 'VT323', monospace;
+}
+
+/* Paper tear sawtooth bottom */
+.sawtooth-edge {
+  background-image: linear-gradient(135deg, #ffffff 50%, transparent 50%), linear-gradient(225deg, #ffffff 50%, transparent 50%);
+  background-size: 14px 10px;
+  background-repeat: repeat-x;
+  background-position: bottom left;
+}
+
+/* Recessed slot depth */
+.printer-slot-shadow {
+  box-shadow: inset 0 5px 12px rgba(15, 23, 42, 0.9), inset 0 -1px 3px rgba(255, 255, 255, 0.1);
+}
+
+/* Ultra-smooth continuous fluid dispensing glide */
+@keyframes smoothContinuousGlide {
+  0% {
+    transform: translateY(-98%);
+    opacity: 0.85;
+  }
+  100% {
+    transform: translateY(0%);
+    opacity: 1;
+  }
+}
+
+.anim-continuous-dispense {
+  animation: smoothContinuousGlide 1.35s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  will-change: transform;
+}
+
+/* Subtle high-speed stepper motor micro-tremble */
+@keyframes stepperJitter {
+  0%, 100% { filter: drop-shadow(0 20px 25px rgba(15, 23, 42, 0.12)); }
+  50% { filter: drop-shadow(0 20px 24px rgba(15, 23, 42, 0.16)); }
+}
+.printing-vibrate {
+  animation: stepperJitter 0.06s infinite linear;
+}
+
+/* Crisp LED pulses */
+@keyframes pulseGreenLed {
+  0%, 100% { opacity: 1; transform: scale(1); filter: drop-shadow(0 0 6px #10b981); }
+  50% { opacity: 0.4; transform: scale(0.92); filter: drop-shadow(0 0 1px #10b981); }
+}
+.led-pulsing {
+  animation: pulseGreenLed 0.5s ease-in-out infinite;
+}
+
+/* Subtle paper texture */
+.thermal-paper {
+  background-color: #ffffff;
+  background-image: radial-gradient(#f1f5f9 0.6px, transparent 0.6px);
+  background-size: 6px 6px;
+}
+
+.animate-paper-feed-down {
+  animation: smoothContinuousGlide 1.35s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  will-change: transform;
+}
+
+@keyframes pulseGlow {
+  0% {
+    box-shadow: 0 0 2px #10b981;
+    opacity: 0.6;
+  }
+  100% {
+    box-shadow: 0 0 12px #10b981, 0 0 18px rgba(16, 185, 129, 0.5);
+    opacity: 1;
+  }
+}
+
+@keyframes priceGlow {
+  0% { color: var(--primary); transform: scale(1.04); }
+  100% { color: var(--text-main); transform: scale(1); }
+}
+
+.animate-price-glow {
+  animation: priceGlow 0.35s ease-out;
+}
+
+/* ==========================================================================
+   THERMAL RECEIPT PAPER STYLE
+   ========================================================================== */
+.thermal-receipt {
+  font-family: var(--font-mono);
+  background-color: #fcfcfa;
+  color: #111827;
+  padding: 24px 18px;
+  border-radius: 6px;
+  box-shadow: 0 16px 36px rgba(0, 0, 0, 0.12), 0 2px 6px rgba(0, 0, 0, 0.06);
+  position: relative;
+  overflow: hidden;
+  font-size: 13px;
+  line-height: 1.4;
+  margin: 0 auto;
+  border: 1px solid #e5e7eb;
+}
+
+/* Zig-zag cut edge for simulated thermal paper */
+.thermal-receipt::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 8px;
+  background: radial-gradient(circle, transparent, transparent 50%, #fcfcfa 50%, #fcfcfa 100%);
+  background-size: 12px 12px;
+}
+.thermal-receipt::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 8px;
+  background: radial-gradient(circle, transparent, transparent 50%, #fcfcfa 50%, #fcfcfa 100%);
+  background-size: 12px 12px;
+}
+
+/* ==========================================================================
+   RESPONSIVE BREAKPOINTS & DRAWER UTILITIES
+   ========================================================================== */
+
+/* DESKTOP & TABLET SIDEBAR UTILITIES */
+.desktop-sidebar-container {
+  display: flex;
+  height: 100%;
+}
+
+.mobile-hamburger-btn {
+  display: flex !important;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.18s cubic-bezier(0.2, 0, 0, 1);
+}
+
+.mobile-hamburger-btn:hover {
+  background-color: #E2E8F0 !important;
+  border-color: #CBD5E1 !important;
+}
+
+.mobile-hamburger-btn:active {
+  transform: scale(0.94);
+}
+
+.mobile-drawer-backdrop {
+  display: flex !important;
+}
+
+@keyframes slideInFromLeft {
+  0% {
+    transform: translateX(-100%);
+    opacity: 0.6;
+  }
+  100% {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+.animate-drawer-in {
+  animation: slideInFromLeft 0.22s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+/* TABLET & MOBILE (< 1024px) */
+@media (max-width: 1023px) {
+  .desktop-sidebar-container {
+    display: none !important;
+  }
+}
+
+/* Segmented Header Navigation */
+.header-segmented-nav::-webkit-scrollbar {
+  display: none;
+}
+.header-segmented-nav {
+  scrollbar-width: none;
+}
+
+@media (max-width: 899px) {
+  .header-nav-label {
+    display: none;
+  }
+}
+
+/* MOBILE ONLY (< 768px) */
+@media (max-width: 767px) {
+  .header-segmented-nav {
+    display: none !important;
+  }
+  .header-quick-text {
+    display: none !important;
+  }
+  .header-search-container {
+    display: none !important;
+  }
+  .header-business-btn span {
+    max-width: 90px !important;
+  }
+  .pos-bill-sidebar {
+    display: none !important;
+  }
+  .mobile-cart-bar {
+    display: flex !important;
+  }
+  .desktop-nav {
+    display: none !important;
+  }
+  .mobile-bottom-nav {
+    display: flex !important;
+  }
+  .menu-items-grid {
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 10px !important;
+  }
+  .pos-main-container {
+    flex-direction: column !important;
+    height: calc(100dvh - 58px) !important;
+    padding-bottom: 74px !important;
+  }
+  .header-token-badge {
+    display: none !important;
+  }
+  .header-brand-title {
+    font-size: 15px !important;
+    font-weight: 700 !important;
+  }
+  .header-printer-text {
+    display: none !important;
+  }
+  .printer-unit-payment-responsive {
+    display: none !important;
+  }
+  /* Mobile Filter Layouts - Zero Vacant Space */
+  .mobile-filter-stack {
+    flex-direction: column !important;
+    align-items: stretch !important;
+    gap: 6px !important;
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+  .mobile-filter-row {
+    display: flex !important;
+    align-items: center !important;
+    gap: 6px !important;
+    width: 100% !important;
+    margin: 0 !important;
+  }
+  .mobile-search-full {
+    width: 100% !important;
+    min-width: 100% !important;
+    flex: none !important;
+    height: auto !important;
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+  .mobile-export-wrap {
+    flex-wrap: wrap !important;
+    gap: 8px !important;
+    width: 100% !important;
+  }
+  .mobile-export-btn {
+    flex: 1 1 calc(50% - 4px) !important;
+    justify-content: center !important;
+  }
+}
+
+/* TABLET (768px - 1024px) - Optimized Tablet Touch Ergonomics */
+@media (min-width: 768px) and (max-width: 1024px) {
+  .billflow-header {
+    padding: 0 12px !important;
+  }
+  .header-segmented-nav {
+    padding: 2px !important;
+    gap: 2px !important;
+  }
+  .header-segmented-nav button {
+    padding: 6px 9px !important;
+    font-size: 11.5px !important;
+  }
+  .pos-bill-sidebar {
+    display: flex !important;
+    flex: 0 0 340px !important;
+    min-width: 330px !important;
+    max-width: 360px !important;
+  }
+  .mobile-cart-bar {
+    display: none !important;
+  }
+  .desktop-nav {
+    display: flex !important;
+  }
+  .mobile-bottom-nav {
+    display: none !important;
+  }
+  .menu-items-grid {
+    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)) !important;
+    gap: 8px !important;
+  }
+  .pos-main-container {
+    flex-direction: row !important;
+    height: calc(100dvh - 64px) !important;
+  }
+}
+
+/* DESKTOP (> 1024px) */
+@media (min-width: 1025px) {
+  .pos-bill-sidebar {
+    display: flex !important;
+    flex: 0 0 430px !important;
+    min-width: 400px !important;
+    max-width: 460px !important;
+  }
+  .mobile-cart-bar {
+    display: none !important;
+  }
+  .desktop-nav {
+    display: flex !important;
+  }
+  .mobile-bottom-nav {
+    display: none !important;
+  }
+  .menu-items-grid {
+    grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)) !important;
+    gap: 12px !important;
+  }
+  .pos-main-container {
+    flex-direction: row !important;
+    height: calc(100dvh - 65px) !important;
+  }
+}
+
+/* Print Styles - Complete Isolation for Thermal Receipts */
+@page {
+  margin: 0mm;
+  size: auto;
+}
+
+@media print {
+  body, html {
+    margin: 0 !important;
+    padding: 0 !important;
+    background: #ffffff !important;
+    color: #000000 !important;
+    height: auto !important;
+    min-height: 0 !important;
+    overflow: visible !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+    display: flex !important;
+    justify-content: center !important;
+    align-items: flex-start !important;
+    width: 100% !important;
+  }
+
+  /* Hide entire page DOM tree by default */
+  body * {
+    visibility: hidden !important;
+  }
+
+  /* Force hide all UI elements, overlays, and non-printable items */
+  header,
+  nav,
+  main,
+  button,
+  .no-print,
+  .no-print * {
+    display: none !important;
+    visibility: hidden !important;
+  }
+
+  /* Make ONLY #printable-receipt and all its children visible */
+  #printable-receipt,
+  #printable-receipt * {
+    visibility: visible !important;
+  }
+
+  #printable-receipt {
+    position: relative !important;
+    left: auto !important;
+    right: auto !important;
+    top: auto !important;
+    margin: 0 auto !important;
+    width: 72mm !important;
+    max-width: 72mm !important;
+    min-width: 72mm !important;
+    padding: 4mm 3mm !important;
+    box-sizing: border-box !important;
+    box-shadow: none !important;
+    border: none !important;
+    background: #ffffff !important;
+    color: #000000 !important;
+    transform: none !important;
+    animation: none !important;
+    overflow: visible !important;
+    page-break-inside: avoid !important;
+  }
+
+  #printable-receipt table {
+    width: 100% !important;
+    border-collapse: collapse !important;
+  }
+
+  #printable-receipt img {
+    max-width: 100% !important;
+    height: auto !important;
+  }
+
+  /* Remove simulated thermal zig-zag paper cuts when printing physically */
+  #printable-receipt::before,
+  #printable-receipt::after {
+    display: none !important;
+  }
+}
+
+/* Celebratory Confirmation Animations */
+@keyframes pulseRing {
+  0% {
+    transform: scale(0.92);
+    opacity: 0.8;
+  }
+  50% {
+    transform: scale(1.15);
+    opacity: 0.3;
+  }
+  100% {
+    transform: scale(0.92);
+    opacity: 0.8;
+  }
+}
+
+@keyframes bounceIn {
+  0% {
+    transform: scale(0.3);
+    opacity: 0;
+  }
+  60% {
+    transform: scale(1.1);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+@keyframes scaleUp {
+  0% {
+    transform: scale(0.85);
+    opacity: 0;
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
