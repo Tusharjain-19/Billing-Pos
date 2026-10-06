@@ -23,6 +23,17 @@
 
 ---
 
+## 🎬 Application Demo Video
+
+<div align="center">
+  <video src="https://github.com/Tusharjain-19/Billing-Pos/raw/main/docs/demo/billing_pos_demo.mp4" width="95%" controls style="border-radius: 12px; border: 1px solid #334155; box-shadow: 0 10px 30px rgba(0,0,0,0.3);">
+    <a href="./docs/demo/billing_pos_demo.mp4">▶️ Click to Watch / Download Billing Pro POS Demo Video (MP4)</a>
+  </video>
+  <p><i>Live walk-through demonstration: High-speed order punching, dish category navigation, live cart modifiers, ESC/POS thermal printing preview, and dashboard analytics.</i></p>
+</div>
+
+---
+
 ## 📸 Real Application Screenshots & Interface Showcase
 
 <div align="center">
