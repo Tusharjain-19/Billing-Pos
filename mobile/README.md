@@ -22,9 +22,8 @@
 
 | Build Target | File Type | Size | Direct Download |
 |---|---|---|---|
-| **Billing Pro Production APK** | `.apk` | 20.4 MB | [⬇️ Download `Billing_Pro_v1.0.apk`](../release/Billing_Pro_v1.0.apk) |
-| **Billing Pro Play Bundle** | `.aab` | 20.3 MB | [⬇️ Download `Billing_Pro_v1.0.aab`](../release/Billing_Pro_v1.0.aab) |
-| **Lightweight POS Release APK** | `.apk` | 16.4 MB | [⬇️ Download `billing-pro-pos-release.apk`](../release/billing-pro-pos-release.apk) |
+| **Billing Pro Production APK** | `.apk` | 12.5 MB | [⬇️ Download `Billing_Pro_v1.0.apk`](../release/Billing_Pro_v1.0.apk) |
+| **Lightweight POS Release APK** | `.apk` | 12.5 MB | [⬇️ Download `billing-pro-pos-release.apk`](../release/billing-pro-pos-release.apk) |
 
 ---
 

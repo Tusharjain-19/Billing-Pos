@@ -14,7 +14,6 @@
   <a href="https://github.com/Tusharjain-19/Billing-Pos/releases"><img src="https://img.shields.io/badge/Windows_Setup-Download_.exe-2563EB?style=for-the-badge&logo=windows&logoColor=white" alt="Download Windows Setup" /></a>
   <a href="https://github.com/Tusharjain-19/Billing-Pos/releases"><img src="https://img.shields.io/badge/Windows_Portable-Download_.zip-0284C7?style=for-the-badge&logo=windows&logoColor=white" alt="Download Windows Portable" /></a>
   <a href="https://github.com/Tusharjain-19/Billing-Pos/releases"><img src="https://img.shields.io/badge/Android_APK-Direct_Download-10B981?style=for-the-badge&logo=android&logoColor=white" alt="Download Android APK" /></a>
-  <a href="https://github.com/Tusharjain-19/Billing-Pos/releases"><img src="https://img.shields.io/badge/Android_Bundle-Download_.aab-059669?style=for-the-badge&logo=googleplay&logoColor=white" alt="Download Android AAB" /></a>
 </p>
 
 <p align="center">
@@ -48,7 +47,6 @@ Download the latest production-ready packages for your device:
 | **Windows PC** | **Interactive Setup Wizard (.exe)** | [📥 **Download Billing_Pro_POS_Setup_v1.0.0.exe**](https://github.com/Tusharjain-19/Billing-Pos/releases/download/v1.0.0/Billing_Pro_POS_Setup_v1.0.0.exe) | **Recommended for Windows**: Guided NSIS installer with custom drive/directory selector, desktop shortcut generation, and clean uninstaller. |
 | **Windows PC** | **Portable Standalone (.zip)** | [📥 **Download Billing_Pro_POS_v1.0_Windows_x64.zip**](https://github.com/Tusharjain-19/Billing-Pos/releases/download/v1.0.0/Billing_Pro_POS_v1.0_Windows_x64.zip) | **Zero Install**: Extract anywhere (SSD, HDD, or USB flash drive) and launch `Billing-Pro-POS.exe` immediately. |
 | **Android Mobile & POS** | **Universal Android Package (.apk)** | [📥 **Download Billing_Pro_v1.0.apk**](https://github.com/Tusharjain-19/Billing-Pos/releases/download/v1.0.0/Billing_Pro_v1.0.apk) | Direct installable APK for Android phones, tablets, and handheld smart POS terminals (Android 7.0+ / API 24+). |
-| **Android Play Store** | **Android App Bundle (.aab)** | [📥 **Download Billing_Pro_v1.0.aab**](https://github.com/Tusharjain-19/Billing-Pos/releases/download/v1.0.0/Billing_Pro_v1.0.aab) | Google Play Store distribution binary with optimized split architecture. |
 
 ---
 
@@ -181,11 +179,11 @@ npm run dist:exe
 ```
 Generates `release-pc/Billing_Pro_POS_Setup_v1.0.0.exe` with interactive NSIS installer.
 
-### 5. Build Android Release APK & AAB
+### 5. Build Android Release APK
 ```powershell
 npm run cap:sync
 cd mobile/android
-./gradlew assembleRelease bundleRelease
+./gradlew assembleRelease
 ```
 
 ---

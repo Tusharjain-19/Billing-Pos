@@ -28,7 +28,7 @@ Subject to compliance with these terms, the owner/operator of this repository gr
 
 Any unauthorized reproduction, modification, distribution, or commercial exploitation is strictly prohibited and subject to legal prosecution under international copyright and intellectual property laws:
 
-1. **No Reverse Engineering**: You may not decompile, disassemble, reverse engineer, decrypt, unpack, or attempt to extract source algorithms from any compiled binaries (`.exe`, `.apk`, `.aab`, `.zip`, `.js`, or `.wasm`).
+1. **No Reverse Engineering**: You may not decompile, disassemble, reverse engineer, decrypt, unpack, or attempt to extract source algorithms from any compiled binaries (`.exe`, `.apk`, `.zip`, `.js`, or `.wasm`).
 2. **No Resale or Sublicensing**: You may not sell, rent, lease, sublicense, bundle, distribute, or host this software as a Software-as-a-Service (SaaS), paid download, or repackaged commercial product without express written consent.
 3. **No White-labeling or Trademark Removal**: You may not remove, alter, obscure, or cover any copyright notices, trademarks, "Powered by BookMyDine QR" branding badges, or proprietary markings embedded within the software or print outputs.
 4. **No Derivation**: You may not create derivative POS software or billing systems using core proprietary algorithms or interface designs from this application.
