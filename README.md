@@ -188,6 +188,24 @@ cd mobile/android
 
 ---
 
+## 👨‍💻 About the Developer & Creator
+
+<div align="center">
+  <h3>Designed & Engineered by <b>Tushar Jain</b></h3>
+  <p><i>Full-Stack Product Architect • Offline-First Systems • FinTech & POS Engineering</i></p>
+  
+  <p>
+    <a href="https://tusharjain.in"><img src="https://img.shields.io/badge/Portfolio-tusharjain.in-10B981?style=for-the-badge&logo=google-chrome&logoColor=white" alt="Portfolio" /></a>
+    <a href="https://github.com/Tusharjain-19"><img src="https://img.shields.io/badge/GitHub-Tusharjain--19-181717?style=for-the-badge&logo=github&logoColor=white" alt="GitHub" /></a>
+  </p>
+  
+  <p style="max-width: 650px; color: #64748B; font-size: 13.5px; line-height: 1.6;">
+    Building hyper-responsive, resilient point-of-sale solutions, air-gapped financial engines, and modern offline-first architectures that empower food, beverage, and retail entrepreneurs with lightning-fast business operations.
+  </p>
+</div>
+
+---
+
 ## ⚖️ Legal & Copyright Notice
 
 Copyright © 2026 **Billing Pro POS / BookMyDine QR**. All Rights Reserved Worldwide.  
@@ -196,5 +214,6 @@ This software and its compiled binaries are proprietary commercial products. For
 ---
 
 <p align="center">
-  <b>Billing Pro POS</b> • Superfast • Reliable • 100% Offline • High Performance Point of Sale System
+  <b>Billing Pro POS</b> • Superfast • Reliable • 100% Offline • High Performance Point of Sale System<br>
+  <sub>Crafted with passion by <a href="https://tusharjain.in">Tushar Jain</a></sub>
 </p>
