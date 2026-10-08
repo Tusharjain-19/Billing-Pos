@@ -187,3 +187,40 @@ export interface PrinterDevice {
   deviceHandle?: any;
   isConnected: boolean;
 }
+
+export interface ElectronStorageInfo {
+  userDataPath: string;
+  documentsPath: string;
+  desktopPath: string;
+  appPath: string;
+  platform: string;
+  arch: string;
+  version: string;
+  isPackaged: boolean;
+}
+
+export interface ElectronSystemPrinter {
+  name: string;
+  displayName: string;
+  description?: string;
+  isDefault: boolean;
+  status: number;
+}
+
+export interface ElectronAPI {
+  isElectron: boolean;
+  selectStorageFolder: () => Promise<string | null>;
+  saveBackupFile: (opts: { folderPath?: string; fileName: string; data: any }) => Promise<{ success: boolean; filePath?: string; error?: string }>;
+  loadBackupFile: () => Promise<{ filePath: string; content: string } | null>;
+  getStorageInfo: () => Promise<ElectronStorageInfo>;
+  getSystemPrinters: () => Promise<ElectronSystemPrinter[]>;
+  printToPrinter: (opts: { printerName?: string; silent?: boolean; pageSize?: string }) => Promise<{ success: boolean; error?: string }>;
+  cancelBluetoothRequest: () => void;
+}
+
+declare global {
+  interface Window {
+    electronAPI?: ElectronAPI;
+  }
+}
+

@@ -61,7 +61,37 @@ export async function saveAndShareFile(options: SaveAndShareOptions): Promise<{ 
       }
     }
 
-    // 2. Mobile Browser Web Share API (Chrome Android / iOS Safari)
+    // 2. Native File System Access API for PC/Laptop (Chrome, Edge, Opera) - Asks where to save file
+    if (typeof window !== 'undefined' && 'showSaveFilePicker' in window && !Capacitor.isNativePlatform()) {
+      try {
+        const ext = filename.includes('.') ? '.' + filename.split('.').pop() : '';
+        const filePickerOptions: any = {
+          suggestedName: filename,
+        };
+        if (ext) {
+          const typeMime = mimeType || (ext === '.pdf' ? 'application/pdf' : ext === '.xlsx' ? 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' : ext === '.json' ? 'application/json' : 'application/octet-stream');
+          filePickerOptions.types = [
+            {
+              description: title,
+              accept: { [typeMime]: [ext] },
+            },
+          ];
+        }
+        const fileHandle = await (window as any).showSaveFilePicker(filePickerOptions);
+        const writableStream = await fileHandle.createWritable();
+        await writableStream.write(blob);
+        await writableStream.close();
+        return { success: true };
+      } catch (pickerErr: any) {
+        if (pickerErr.name === 'AbortError') {
+          // User intentionally canceled save dialog
+          return { success: true };
+        }
+        console.warn('showSaveFilePicker failed or unallowed, trying download fallback:', pickerErr);
+      }
+    }
+
+    // 3. Mobile Browser Web Share API (Chrome Android / iOS Safari)
     if (typeof navigator !== 'undefined' && navigator.share && navigator.canShare) {
       try {
         const file = new File([blob], filename, { type: mimeType || blob.type || 'application/octet-stream' });
@@ -74,7 +104,6 @@ export async function saveAndShareFile(options: SaveAndShareOptions): Promise<{ 
           return { success: true };
         }
       } catch (shareErr: any) {
-        // User cancelled share or browser restriction - fallback to standard download
         if (shareErr.name === 'AbortError') {
           return { success: true };
         }
@@ -82,7 +111,7 @@ export async function saveAndShareFile(options: SaveAndShareOptions): Promise<{ 
       }
     }
 
-    // 3. Standard Browser Blob Download
+    // 4. Standard Browser Blob Download (Save locally to device Downloads folder)
     const url = URL.createObjectURL(blob);
     const anchor = document.createElement('a');
     anchor.style.display = 'none';
@@ -94,7 +123,7 @@ export async function saveAndShareFile(options: SaveAndShareOptions): Promise<{ 
     setTimeout(() => {
       document.body.removeChild(anchor);
       URL.revokeObjectURL(url);
-    }, 400);
+    }, 1000);
 
     return { success: true };
   } catch (err: any) {

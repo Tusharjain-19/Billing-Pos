@@ -57,12 +57,6 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
         const upiUrl = generateUpiString(profile.upiVpa, profile.upiPayeeName, grandTotal, suggestedBillNo);
         generateQrCodeDataUrl(upiUrl).then(setUpiQrUrl);
       }
-
-      // Auto focus cash input
-      setTimeout(() => {
-        cashInputRef.current?.focus();
-        cashInputRef.current?.select();
-      }, 100);
     }
   }, [grandTotal, profile, suggestedBillNo, isOpen]);
 
@@ -247,9 +241,7 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
                     type="button"
                     onClick={() => {
                       setPaymentMode(m.id as PaymentMode);
-                      if (m.id === 'cash') {
-                        setTimeout(() => cashInputRef.current?.focus(), 50);
-                      } else if (m.id === 'upi') {
+                      if (m.id === 'upi') {
                         setPrintWithQr(true);
                       }
                     }}

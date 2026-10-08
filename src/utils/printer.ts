@@ -226,18 +226,42 @@ export async function convertImageToEscPosRaster(
 
   try {
     const img = new Image();
-    img.crossOrigin = 'anonymous';
+    // Only set crossOrigin for remote http(s) URLs; avoid setting on data: or local relative URLs which taints canvas
+    if (imageUrl.startsWith('http://') || imageUrl.startsWith('https://')) {
+      img.crossOrigin = 'anonymous';
+    }
+
+    let loadSrc = imageUrl;
+    if (typeof window !== 'undefined' && !imageUrl.startsWith('data:') && !imageUrl.startsWith('blob:') && !imageUrl.startsWith('http')) {
+      try {
+        loadSrc = new URL(imageUrl, window.location.href).href;
+      } catch {
+        loadSrc = imageUrl;
+      }
+    }
 
     await new Promise<void>((resolve, reject) => {
       img.onload = () => resolve();
-      img.onerror = () => reject(new Error('Image failed to load for thermal print'));
-      img.src = imageUrl;
+      img.onerror = () => {
+        if (!imageUrl.startsWith('data:') && !imageUrl.startsWith('http') && !imageUrl.startsWith('/')) {
+          const fallbackImg = new Image();
+          fallbackImg.onload = () => {
+            img.src = fallbackImg.src;
+            resolve();
+          };
+          fallbackImg.onerror = () => reject(new Error('Image failed to load for thermal print'));
+          fallbackImg.src = '/' + imageUrl.replace(/^\.\//, '');
+        } else {
+          reject(new Error('Image failed to load for thermal print'));
+        }
+      };
+      img.src = loadSrc;
     });
 
     const totalDots = paperWidth === 80 ? 576 : 384;
     const widthBytes = Math.ceil(totalDots / 8);
 
-    const targetLogoWidth = paperWidth === 80 ? 240 : 160;
+    const targetLogoWidth = paperWidth === 80 ? 260 : 180;
     const aspect = img.naturalHeight / (img.naturalWidth || 1);
     let targetLogoHeight = Math.round(targetLogoWidth * aspect);
 
@@ -381,12 +405,14 @@ export function buildEscPosBill(
     buf.push(ESC, 0x45, 0x00, ESC, 0x61, 0x00);
   }
 
-  // ── Optional Raster Logo (Only if custom uploaded and explicitly enabled) ──
+  // ── Optional Raster Logo (Centered on 58mm / 80mm ESC/POS Thermal Printer) ──
   if (options?.logoRasterBytes && options.logoRasterBytes.length > 0) {
+    buf.push(ESC, 0x61, 0x01); // Center Align
     for (let i = 0; i < options.logoRasterBytes.length; i++) {
       buf.push(options.logoRasterBytes[i]);
     }
     buf.push(0x0a);
+    buf.push(ESC, 0x61, 0x00); // Reset Left
   }
 
   // ── Header (Centered, clean) ──
@@ -554,7 +580,7 @@ export function buildEscPosBill(
     addLine('VISIT AGAIN');
   }
   buf.push(ESC, 0x45, 0x00); // Bold OFF
-  addLine('Powered by bookmydineqr');
+  addLine('Powered by Billing Pro POS');
   buf.push(ESC, 0x61, 0x00); // Reset Left
 
   // ── Feed to Clear Tear Bar & Cut ──
@@ -570,7 +596,7 @@ export function buildEscPosBill(
 /**
  * Async bill builder:
  * Converts and prints custom logo and dynamic UPI QR code into ESC/POS raster bitmaps.
- * Never prints default app placeholder to avoid black blobs!
+ * Never prints default app placeholder if logo is disabled to avoid paper waste!
  */
 export async function generateEscPosBill(
   bill: Bill,
@@ -580,15 +606,14 @@ export async function generateEscPosBill(
 ): Promise<EscPosResult> {
   let logoRasterBytes: Uint8Array | null = null;
 
-  const isCustomLogo =
-    profile.printLogoOnThermal === true &&
-    profile.logoUrl &&
-    !profile.logoUrl.startsWith('data:image/svg+xml') &&
-    profile.logoUrl !== DEFAULT_RESTAURANT_LOGO &&
-    !profile.logoUrl.includes('billing-pro-logo');
+  const activeLogo = profile.logoUrl || './logo.png';
+  const shouldPrintLogo =
+    profile.printLogoOnThermal !== false &&
+    Boolean(activeLogo) &&
+    !activeLogo.startsWith('data:image/svg+xml');
 
-  if (isCustomLogo && profile.logoUrl) {
-    logoRasterBytes = await convertImageToEscPosRaster(profile.logoUrl, profile.paperWidth, 60, false);
+  if (shouldPrintLogo && activeLogo) {
+    logoRasterBytes = await convertImageToEscPosRaster(activeLogo, profile.paperWidth, 80, false);
   }
 
   let qrRasterBytes: Uint8Array | null = null;
@@ -831,12 +856,15 @@ function notifyStatus(connected: boolean, deviceName?: string) {
 
 const BLE_SERVICE_UUIDS = [
   '000018f0-0000-1000-8000-00805f9b34fb', // Standard POS BLE Service
-  'e7810a71-73ae-499d-8c15-faa9aef0c3f2', // MPT-II / MT580P Printers
+  'e7810a71-73ae-499d-8c15-faa9aef0c3f2', // MPT-II / MT580P / RPP02N Printers
+  'e7810a71-73ae-499d-8c15-dda9fef6761e',
   '49535343-fe7d-4ae5-8fa9-9fafd205e455', // ISSC Transparent Serial
+  '6e400001-b5a3-f393-e0a9-e50e24dcca9e', // Nordic UART Serial (Everycom, Zijiang)
+  '0000ffe0-0000-1000-8000-00805f9b34fb', // Chinese Serial BLE POS
+  '0000ffe1-0000-1000-8000-00805f9b34fb',
   '0000fee7-0000-1000-8000-00805f9b34fb', // MT580P / Tencent BLE POS
   '0000fee0-0000-1000-8000-00805f9b34fb',
-  '0000ffe0-0000-1000-8000-00805f9b34fb', // MT580P / Chinese Serial BLE
-  '0000fff0-0000-1000-8000-00805f9b34fb',
+  '0000fff0-0000-1000-8000-00805f9b34fb', // POS-5802 / POS-8001
   '0000ff00-0000-1000-8000-00805f9b34fb',
   '0000ae00-0000-1000-8000-00805f9b34fb',
   '0000ae30-0000-1000-8000-00805f9b34fb',

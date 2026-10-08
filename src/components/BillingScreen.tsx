@@ -37,6 +37,7 @@ import { searchMenuItems } from '../utils/search';
 import { saveNewBill, getNextOrderNo, db } from '../db';
 import {
   buildEscPosBill,
+  generateEscPosBill,
   buildEscPosKot,
   printViaBluetooth,
   isBluetoothPrinterConnected,
@@ -52,7 +53,7 @@ import { customAlert, customConfirm } from './CustomDialog';
 /**
  * Background silent print helper for system thermal printing without modal clutter.
  */
-function printCleanReceiptHtml(text: string, isWide: boolean) {
+function printCleanReceiptHtml(text: string, isWide: boolean, logoUrl?: string) {
   if (typeof document === 'undefined') return;
   const iframe = document.createElement('iframe');
   iframe.style.position = 'fixed';
@@ -88,9 +89,23 @@ function printCleanReceiptHtml(text: string, isWide: boolean) {
             line-height: 1.35;
             color: #000;
           }
+          .receipt-logo {
+            text-align: center;
+            margin-bottom: 6px;
+          }
+          .receipt-logo img {
+            max-height: 52px;
+            max-width: 140px;
+            object-fit: contain;
+            display: block;
+            margin: 0 auto;
+          }
         </style>
       </head>
-      <body>${text.replace(/</g, '&lt;').replace(/>/g, '&gt;')}</body>
+      <body>
+        ${logoUrl ? `<div class="receipt-logo"><img src="${logoUrl}" alt="Store Logo" /></div>` : ''}
+        ${text.replace(/</g, '&lt;').replace(/>/g, '&gt;')}
+      </body>
     </html>
   `);
   doc.close();
@@ -265,6 +280,21 @@ export const BillingScreen: React.FC<BillingScreenProps> = ({
       if (!confirmPunch) return;
     }
 
+    // Inventory Stock Quantity Boundary Check
+    if (typeof item.stockQty === 'number' && item.stockQty !== undefined && item.stockQty !== null) {
+      const currentInCart = cart
+        .filter((ci) => ci.itemId === item.id)
+        .reduce((sum, ci) => sum + ci.qty, 0);
+
+      if (currentInCart >= item.stockQty) {
+        customAlert(
+          `Only ${item.stockQty} ${item.stockQty === 1 ? 'portion' : 'portions'} of "${item.name}" left in stock! Cannot add more.`,
+          'Inventory Limit'
+        );
+        return;
+      }
+    }
+
     if (item.variants && item.variants.length > 0) {
       setVariantModalItem(item);
       return;
@@ -287,6 +317,21 @@ export const BillingScreen: React.FC<BillingScreenProps> = ({
   }, [externalAddItem]);
 
   const addItemToCart = (item: Item, price: number, variantLabel?: string) => {
+    // Inventory Stock Quantity Boundary Check
+    if (typeof item.stockQty === 'number' && item.stockQty !== undefined && item.stockQty !== null) {
+      const currentInCart = cart
+        .filter((ci) => ci.itemId === item.id)
+        .reduce((sum, ci) => sum + ci.qty, 0);
+
+      if (currentInCart >= item.stockQty) {
+        customAlert(
+          `Only ${item.stockQty} ${item.stockQty === 1 ? 'portion' : 'portions'} of "${item.name}" left in stock! Cannot add more.`,
+          'Inventory Limit'
+        );
+        return;
+      }
+    }
+
     setCart((prev) => {
       const existingIdx = prev.findIndex(
         (ci) => ci.itemId === item.id && ci.variantSnapshot === variantLabel
@@ -321,9 +366,29 @@ export const BillingScreen: React.FC<BillingScreenProps> = ({
   };
 
   const updateCartItemQty = (index: number, delta: number) => {
+    if (delta > 0) {
+      const target = cart[index];
+      if (target && target.itemId) {
+        const matchedItem = items.find((i) => i.id === target.itemId);
+        if (matchedItem && typeof matchedItem.stockQty === 'number' && matchedItem.stockQty !== undefined && matchedItem.stockQty !== null) {
+          const currentInCart = cart
+            .filter((ci) => ci.itemId === matchedItem.id)
+            .reduce((sum, ci) => sum + ci.qty, 0);
+          if (currentInCart >= matchedItem.stockQty) {
+            customAlert(
+              `Only ${matchedItem.stockQty} ${matchedItem.stockQty === 1 ? 'portion' : 'portions'} of "${matchedItem.name}" left in stock! Cannot increase quantity.`,
+              'Inventory Limit'
+            );
+            return;
+          }
+        }
+      }
+    }
+
     setCart((prev) => {
       const next = [...prev];
       const target = next[index];
+      if (!target) return prev;
       const newQty = target.qty + delta;
 
       if (newQty <= 0) {
@@ -555,9 +620,11 @@ export const BillingScreen: React.FC<BillingScreenProps> = ({
       });
 
       if (shouldPrint) {
-        const escPos = buildEscPosBill(savedBill, profile, false, {
+        const escPos = await generateEscPosBill(savedBill, profile, false, {
           includeQrCode: printWithQr,
         });
+
+        const activeLogo = profile.printLogoOnThermal !== false ? (profile.logoUrl || './logo.png') : undefined;
 
         if (isAndroidNative()) {
           const res = await printViaBluetooth(escPos.bytes, false);
@@ -568,11 +635,11 @@ export const BillingScreen: React.FC<BillingScreenProps> = ({
         } else if (isBluetoothPrinterConnected()) {
           printViaBluetooth(escPos.bytes, false);
         } else {
-          printCleanReceiptHtml(escPos.textPreview, profile.paperWidth === 80);
+          printCleanReceiptHtml(escPos.textPreview, profile.paperWidth === 80, activeLogo);
         }
       }
 
-      // Celebratory confirmation modal with animated green tick & receipt details!
+      // Celebratory Google Pay-style confirmation modal with animated pulsing green tick!
       setSuccessModalData({
         isOpen: true,
         orderNo: savedBill.orderNo || 1,
@@ -580,10 +647,10 @@ export const BillingScreen: React.FC<BillingScreenProps> = ({
         currencySymbol: profile.currencySymbol,
         paymentMode: mode,
         printerName: isBluetoothPrinterConnected() ? (getSavedPrinterName() || 'MT580P') : 'System Print Ready',
-        title: 'Order Settled & Printed!',
-        subtitle: `Order #${(savedBill.orderNo || 1).toString().padStart(5, '0')} settled via ${mode.toUpperCase()} & receipt printed.`,
-        onReprint: () => {
-          const escPos = buildEscPosBill(savedBill, profile, true, { includeQrCode: printWithQr });
+        title: 'Order Completed Successfully!',
+        subtitle: `Invoice #${(savedBill.orderNo || 1).toString().padStart(5, '0')} • ${formatPaise(roundedGrandTotal, profile.currencySymbol)} • ${mode.toUpperCase()}`,
+        onReprint: async () => {
+          const escPos = await generateEscPosBill(savedBill, profile, true, { includeQrCode: printWithQr });
           printViaBluetooth(escPos.bytes, false);
         },
         onViewBill: () => {
@@ -1302,7 +1369,7 @@ export const BillingScreen: React.FC<BillingScreenProps> = ({
           </div>
 
           {/* Table / Customer Details Line & Parcel / Order Badges */}
-          <div style={{ display: 'flex', gap: '6px', alignItems: 'center', flexWrap: 'wrap' }}>
+          <div style={{ display: 'flex', gap: '8px', alignItems: 'center', flexWrap: 'wrap' }}>
             {orderType === 'dine_in' ? (
               <div style={{ flex: 1, display: 'flex', alignItems: 'center', gap: '6px', minWidth: '120px' }}>
                 <span style={{ fontSize: '12px', fontWeight: 700, color: 'var(--text-muted)' }}>Table:</span>
@@ -1311,7 +1378,7 @@ export const BillingScreen: React.FC<BillingScreenProps> = ({
                   value={tableNo}
                   onChange={(e) => setTableNo(e.target.value)}
                   placeholder="T1"
-                  style={{ width: '80px', padding: '5px 8px', fontSize: '13px', fontWeight: 800 }}
+                  style={{ width: '80px', padding: '6px 10px', fontSize: '13px', fontWeight: 800, borderRadius: '8px', border: '1.5px solid var(--border-color)', outline: 'none' }}
                 />
               </div>
             ) : (
@@ -1321,45 +1388,47 @@ export const BillingScreen: React.FC<BillingScreenProps> = ({
                   placeholder="Customer Name"
                   value={customerName}
                   onChange={(e) => setCustomerName(e.target.value)}
-                  style={{ flex: 1, padding: '5px 8px', fontSize: '12px' }}
+                  style={{ flex: 1, minWidth: 0, padding: '6px 10px', fontSize: '12px', borderRadius: '8px', border: '1.5px solid var(--border-color)', outline: 'none', backgroundColor: 'var(--bg-app)', color: 'var(--text-main)' }}
                 />
               </div>
             )}
 
-            {/* If Takeaway/Parcel: Show highlighted PARCEL Badge */}
-            {orderType === 'takeaway' && (
+            {/* Badges Container */}
+            <div style={{ display: 'flex', gap: '6px', alignItems: 'center', flexShrink: 0 }}>
+              {/* If Takeaway/Parcel: Show highlighted PARCEL Badge */}
+              {orderType === 'takeaway' && (
+                <div style={{
+                  padding: '5px 9px',
+                  borderRadius: '8px',
+                  backgroundColor: '#FEF3C7',
+                  border: '1.5px solid #F59E0B',
+                  color: '#92400E',
+                  fontSize: '11px',
+                  fontWeight: 900,
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '4px',
+                  letterSpacing: '0.02em',
+                }}>
+                  <span>🥡 PARCEL</span>
+                </div>
+              )}
+
+              {/* Order No Badge */}
               <div style={{
-                padding: '4px 8px',
-                borderRadius: '0px',
-                backgroundColor: '#FEF3C7',
-                border: '1.5px solid #F59E0B',
-                color: '#92400E',
-                fontSize: '11px',
-                fontWeight: 900,
+                padding: '5px 10px',
+                borderRadius: '8px',
+                backgroundColor: 'rgba(16, 185, 129, 0.12)',
+                border: '1px solid rgba(16, 185, 129, 0.3)',
+                color: 'var(--accent-green)',
+                fontSize: '11.5px',
+                fontWeight: 800,
                 display: 'flex',
                 alignItems: 'center',
-                gap: '4px',
-                letterSpacing: '0.02em',
-                animation: 'badgePop 0.25s ease-out',
+                whiteSpace: 'nowrap',
               }}>
-                <span>🥡 PARCEL</span>
+                Order #{(latestOrderNo + 1).toString().padStart(5, '0')}
               </div>
-            )}
-
-            {/* Order No Badge */}
-            <div style={{
-              padding: '5px 10px',
-              borderRadius: '8px',
-              backgroundColor: 'rgba(16, 185, 129, 0.12)',
-              border: '1px solid rgba(16, 185, 129, 0.3)',
-              color: 'var(--accent-green)',
-              fontSize: '11.5px',
-              fontWeight: 800,
-              display: 'flex',
-              alignItems: 'center',
-              whiteSpace: 'nowrap',
-            }}>
-              Order #{(latestOrderNo + 1).toString().padStart(5, '0')}
             </div>
           </div>
         </div>
@@ -1778,7 +1847,7 @@ export const BillingScreen: React.FC<BillingScreenProps> = ({
               </div>
 
               {/* Table / Customer Details & Parcel Indicator */}
-              <div style={{ display: 'flex', gap: '6px', alignItems: 'center', flexWrap: 'wrap' }}>
+              <div style={{ display: 'flex', gap: '8px', alignItems: 'center', flexWrap: 'wrap' }}>
                 {orderType === 'dine_in' ? (
                   <div style={{ flex: 1, display: 'flex', alignItems: 'center', gap: '6px', minWidth: '110px' }}>
                     <span style={{ fontSize: '11.5px', fontWeight: 700, color: 'var(--text-muted)' }}>Table:</span>
@@ -1787,7 +1856,7 @@ export const BillingScreen: React.FC<BillingScreenProps> = ({
                       value={tableNo}
                       onChange={(e) => setTableNo(e.target.value)}
                       placeholder="T1"
-                      style={{ width: '70px', padding: '4px 8px', fontSize: '12px', fontWeight: 800 }}
+                      style={{ width: '70px', padding: '5px 8px', fontSize: '12px', fontWeight: 800, borderRadius: '8px', border: '1.5px solid var(--border-color)', outline: 'none' }}
                     />
                   </div>
                 ) : (
@@ -1797,41 +1866,43 @@ export const BillingScreen: React.FC<BillingScreenProps> = ({
                       placeholder="Customer Name"
                       value={customerName}
                       onChange={(e) => setCustomerName(e.target.value)}
-                      style={{ flex: 1, padding: '4px 8px', fontSize: '12px' }}
+                      style={{ flex: 1, minWidth: 0, padding: '5px 8px', fontSize: '12px', borderRadius: '8px', border: '1.5px solid var(--border-color)', outline: 'none', backgroundColor: 'var(--bg-app)', color: 'var(--text-main)' }}
                     />
                   </div>
                 )}
 
-                {orderType === 'takeaway' && (
+                <div style={{ display: 'flex', gap: '6px', alignItems: 'center', flexShrink: 0 }}>
+                  {orderType === 'takeaway' && (
+                    <div style={{
+                      padding: '4px 8px',
+                      borderRadius: '8px',
+                      backgroundColor: '#FEF3C7',
+                      border: '1px solid #F59E0B',
+                      color: '#92400E',
+                      fontSize: '10.5px',
+                      fontWeight: 900,
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '3px',
+                    }}>
+                      <span>🥡 PARCEL</span>
+                    </div>
+                  )}
+
                   <div style={{
-                    padding: '3px 7px',
-                    borderRadius: '0px',
-                    backgroundColor: '#FEF3C7',
-                    border: '1px solid #F59E0B',
-                    color: '#92400E',
-                    fontSize: '10.5px',
-                    fontWeight: 900,
+                    padding: '5px 9px',
+                    borderRadius: '8px',
+                    backgroundColor: 'rgba(16, 185, 129, 0.12)',
+                    border: '1px solid rgba(16, 185, 129, 0.3)',
+                    color: 'var(--accent-green)',
+                    fontSize: '11px',
+                    fontWeight: 800,
                     display: 'flex',
                     alignItems: 'center',
-                    gap: '3px',
+                    whiteSpace: 'nowrap',
                   }}>
-                    <span>🥡 PARCEL</span>
+                    Order #{(latestOrderNo + 1).toString().padStart(5, '0')}
                   </div>
-                )}
-
-                <div style={{
-                  padding: '5px 9px',
-                  borderRadius: '6px',
-                  backgroundColor: 'rgba(16, 185, 129, 0.12)',
-                  border: '1px solid rgba(16, 185, 129, 0.3)',
-                  color: 'var(--accent-green)',
-                  fontSize: '11px',
-                  fontWeight: 800,
-                  display: 'flex',
-                  alignItems: 'center',
-                  whiteSpace: 'nowrap',
-                }}>
-                  Order #{(latestOrderNo + 1).toString().padStart(5, '0')}
                 </div>
               </div>
             </div>
@@ -2338,6 +2409,7 @@ export const BillingScreen: React.FC<BillingScreenProps> = ({
             onRefreshData();
           }}
           onAfterPrint={() => {
+            const printedBill = receiptPreviewBill;
             setReceiptPreviewBill(null);
             // Turnover immediately to next new order
             setCart([]);
@@ -2348,6 +2420,27 @@ export const BillingScreen: React.FC<BillingScreenProps> = ({
             setTableNo('T1');
             setPackagingCharge(0);
             onRefreshData();
+
+            if (printedBill) {
+              setSuccessModalData({
+                isOpen: true,
+                orderNo: printedBill.orderNo || 1,
+                amountPaise: printedBill.grandTotal,
+                currencySymbol: profile.currencySymbol,
+                paymentMode: printedBill.paymentMode || 'cash',
+                printerName: isBluetoothPrinterConnected() ? (getSavedPrinterName() || 'MT580P') : 'System Print Ready',
+                title: 'Order Completed Successfully!',
+                subtitle: `Invoice #${(printedBill.orderNo || 1).toString().padStart(5, '0')} • ${formatPaise(printedBill.grandTotal, profile.currencySymbol)} • ${(printedBill.paymentMode || 'cash').toUpperCase()}`,
+                onReprint: async () => {
+                  const escPos = await generateEscPosBill(printedBill, profile, true, { includeQrCode: receiptPreviewShowQr });
+                  printViaBluetooth(escPos.bytes, false);
+                },
+                onViewBill: () => {
+                  setReceiptPreviewBill(printedBill);
+                  setReceiptPreviewShowQr(receiptPreviewShowQr);
+                },
+              });
+            }
           }}
           onUpdateBillPayment={() => {
             onRefreshData();

@@ -1,0 +1,39 @@
+================================================================================
+                    BILLING PRO POS - END USER LICENSE & CONSENT
+================================================================================
+
+Welcome to Billing Pro POS by BookMyDine QR.
+
+Please read and review the following terms and operational consent before
+proceeding with the installation.
+
+1. 100% OFFLINE DATA PRIVACY & LOCAL STORAGE
+   Billing Pro POS operates entirely offline. All sales records, invoices,
+   menu items, categories, customer details, and audit logs are stored strictly
+   on your local machine (SSD / HDD storage) using modern IndexedDB local
+   databases. No financial or transaction data is ever transmitted to external
+   cloud servers.
+
+2. HARDWARE INTEGRATION & LOCAL ACCESS CONSENT
+   By installing this software, you consent to allow Billing Pro POS to:
+   - Access local and paired Bluetooth / USB ESC/POS thermal printers (58mm/80mm).
+   - Write automated daily database backups to your local filesystem.
+   - Generate dynamic UPI payment QR codes and export audited reports (PDF / Excel).
+
+3. DATA SAFETY & BACKUPS
+   While the application includes automated daily local backup safeguards,
+   you are encouraged to periodically use the "1-Click Full Backup" feature
+   in the Settings screen to save database archives to an external USB drive
+   or secure local directory.
+
+4. COMMERCIAL USAGE RIGHTS
+   You are granted full commercial rights to operate Billing Pro POS across
+   unlimited counters, billing stations, restaurants, cafes, QSRs, or retail
+   counters with zero subscription fees and zero recurring charges.
+
+If you agree to these terms and wish to install Billing Pro POS, click "I Agree"
+to choose your installation location and begin setup.
+
+================================================================================
+                 Billing Pro POS • Superfast Offline Billing
+================================================================================

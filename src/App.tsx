@@ -18,6 +18,7 @@ import { Header } from './components/Header';
 import { Dashboard } from './components/Dashboard';
 import { BillingScreen } from './components/BillingScreen';
 import { BillHistory } from './components/BillHistory';
+import { ReportsScreen } from './components/ReportsScreen';
 import { MenuManager } from './components/MenuManager';
 import { SettingsScreen } from './components/SettingsScreen';
 import { PrinterModal } from './components/PrinterModal';
@@ -27,6 +28,7 @@ import { CustomDialogHost } from './components/CustomDialog';
 import { initializeCapacitor } from './utils/capacitor';
 import { getDailyOrderKey } from './utils/numbering';
 import { autoConnectSavedPrinter, isBluetoothPrinterConnected, subscribeToPrinterStatus } from './utils/printer';
+import { checkAndPerformDailyAutoBackup } from './utils/electronStorage';
 
 export const App: React.FC = () => {
   const [profile, setProfile] = useState<RestaurantProfile>(DEFAULT_PROFILE);
@@ -85,6 +87,8 @@ export const App: React.FC = () => {
       setHeldBills(loadedHeld);
       setLatestOrderNo(currentOrderSeq);
       setIsLoaded(true);
+      // Auto HDD/SSD backup check on startup
+      checkAndPerformDailyAutoBackup().catch(() => {});
     } catch (err) {
       console.error('Error loading database:', err);
       setIsLoaded(true);
@@ -125,17 +129,168 @@ export const App: React.FC = () => {
     return (
       <div
         style={{
-          height: '100vh',
+          height: '100dvh',
+          width: '100vw',
           display: 'flex',
+          flexDirection: 'column',
           alignItems: 'center',
           justifyContent: 'center',
-          backgroundColor: '#F8FAFC',
-          color: 'var(--text-main)',
-          fontSize: '18px',
-          fontWeight: 800,
+          backgroundColor: '#FFFFFF',
+          padding: '24px',
+          boxSizing: 'border-box',
+          position: 'fixed',
+          inset: 0,
+          zIndex: 99999,
+          userSelect: 'none',
+          fontFamily: 'var(--font-body)',
         }}
       >
-        Loading BillFlow POS...
+        <div
+          style={{
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+            textAlign: 'center',
+            maxWidth: '360px',
+            width: '100%',
+            animation: 'fadeIn 0.3s ease-out',
+          }}
+        >
+          {/* Logo with Soft Glowing Ambient Halo */}
+          <div
+            style={{
+              position: 'relative',
+              width: '96px',
+              height: '96px',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              marginBottom: '20px',
+            }}
+          >
+            <div
+              style={{
+                position: 'absolute',
+                inset: '-8px',
+                borderRadius: '28px',
+                background: 'radial-gradient(circle, rgba(37,99,235,0.18) 0%, rgba(16,185,129,0.08) 70%, transparent 100%)',
+                filter: 'blur(8px)',
+                animation: 'pulseHalo 2s infinite ease-in-out',
+              }}
+            />
+            <div
+              style={{
+                position: 'relative',
+                width: '86px',
+                height: '86px',
+                borderRadius: '24px',
+                backgroundColor: '#FFFFFF',
+                border: '1.5px solid #E2E8F0',
+                boxShadow: '0 12px 28px -6px rgba(15, 23, 42, 0.12), 0 4px 10px -2px rgba(15, 23, 42, 0.04)',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                padding: '12px',
+                boxSizing: 'border-box',
+              }}
+            >
+              <img
+                src="./logo.png"
+                alt="Billing Pro"
+                style={{
+                  width: '100%',
+                  height: '100%',
+                  objectFit: 'contain',
+                }}
+              />
+            </div>
+          </div>
+
+          {/* Brand Name */}
+          <h1
+            style={{
+              margin: '0 0 6px 0',
+              fontSize: '26px',
+              fontWeight: 900,
+              color: '#0F172A',
+              letterSpacing: '-0.03em',
+              fontFamily: 'var(--font-heading)',
+            }}
+          >
+            Billing <span style={{ color: '#2563EB' }}>Pro</span>
+          </h1>
+
+          {/* Subtitle */}
+          <p
+            style={{
+              margin: '0 0 24px 0',
+              fontSize: '12.5px',
+              color: '#64748B',
+              fontWeight: 700,
+              letterSpacing: '0.04em',
+              textTransform: 'uppercase',
+            }}
+          >
+            Superfast Offline POS
+          </p>
+
+          {/* Animated Gradient Progress Track */}
+          <div
+            style={{
+              width: '190px',
+              height: '5px',
+              backgroundColor: '#F1F5F9',
+              borderRadius: '999px',
+              overflow: 'hidden',
+              position: 'relative',
+              marginBottom: '14px',
+              boxShadow: 'inset 0 1px 2px rgba(0,0,0,0.06)',
+            }}
+          >
+            <div
+              style={{
+                position: 'absolute',
+                top: 0,
+                bottom: 0,
+                width: '75px',
+                borderRadius: '999px',
+                background: 'linear-gradient(90deg, #2563EB, #10B981)',
+                animation: 'loadingSweep 1.2s infinite ease-in-out',
+              }}
+            />
+          </div>
+
+          {/* Status Label */}
+          <p
+            style={{
+              margin: 0,
+              fontSize: '11.5px',
+              color: '#94A3B8',
+              fontWeight: 600,
+              letterSpacing: '0.02em',
+            }}
+          >
+            Starting 100% Offline POS Engine…
+          </p>
+
+          {/* Bottom Footer Badge */}
+          <div
+            style={{
+              position: 'fixed',
+              bottom: '24px',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '6px',
+              fontSize: '11px',
+              fontWeight: 600,
+              color: '#94A3B8',
+            }}
+          >
+            <span>⚡ Powered by BookMyDine QR</span>
+            <span>•</span>
+            <span style={{ color: '#10B981' }}>100% Offline</span>
+          </div>
+        </div>
       </div>
     );
   }
@@ -193,6 +348,7 @@ export const App: React.FC = () => {
           display: 'flex',
           flexDirection: 'column',
           minWidth: 0,
+          minHeight: 0,
           height: '100%',
           overflow: 'hidden',
         }}
@@ -218,10 +374,20 @@ export const App: React.FC = () => {
           activeCartCount={activeCartCount}
         />
 
-        {/* View Switcher */}
-        <main style={{ flex: 1, position: 'relative', overflow: 'hidden' }}>
+        {/* View Switcher with Full Dynamic Height and Uninhibited Scrolling */}
+        <main
+          style={{
+            flex: 1,
+            minHeight: 0,
+            height: '100%',
+            position: 'relative',
+            overflow: 'hidden',
+            display: 'flex',
+            flexDirection: 'column',
+          }}
+        >
           {/* We keep BillingScreen mounted so in-progress orders are never lost when checking other tabs */}
-          <div style={{ display: currentTab === 'billing' ? 'block' : 'none', height: '100%', width: '100%' }}>
+          <div style={{ display: currentTab === 'billing' ? 'block' : 'none', height: '100%', width: '100%', flex: 1, minHeight: 0 }}>
             <BillingScreen
               categories={categories}
               items={items}
@@ -238,47 +404,64 @@ export const App: React.FC = () => {
           </div>
 
           {currentTab === 'dashboard' && (
-            <Dashboard
-              bills={bills}
-              items={items}
-              categories={categories}
-              profile={profile}
-              latestOrderNo={latestOrderNo}
-              heldBillsCount={heldBills.length}
-              onNavigateTab={setCurrentTab}
-              onOpenPrinterModal={() => setPrinterModalOpen(true)}
-              onOpenHeldBills={() => setHeldBillsModalOpen(true)}
-              onRefreshData={loadDatabaseData}
-            />
+            <div style={{ flex: 1, minHeight: 0, height: '100%', width: '100%', overflowY: 'auto', overflowX: 'hidden', WebkitOverflowScrolling: 'touch' }}>
+              <Dashboard
+                bills={bills}
+                items={items}
+                categories={categories}
+                profile={profile}
+                latestOrderNo={latestOrderNo}
+                heldBillsCount={heldBills.length}
+                onNavigateTab={setCurrentTab}
+                onOpenPrinterModal={() => setPrinterModalOpen(true)}
+                onOpenHeldBills={() => setHeldBillsModalOpen(true)}
+                onRefreshData={loadDatabaseData}
+              />
+            </div>
           )}
 
           {currentTab === 'menu' && (
-            <MenuManager
-              categories={categories}
-              items={items}
-              profile={profile}
-              onRefreshData={loadDatabaseData}
-              globalSearch={globalSearch}
-              onClearGlobalSearch={() => setGlobalSearch('')}
-            />
+            <div style={{ flex: 1, minHeight: 0, height: '100%', width: '100%', overflowY: 'auto', overflowX: 'hidden', WebkitOverflowScrolling: 'touch' }}>
+              <MenuManager
+                categories={categories}
+                items={items}
+                profile={profile}
+                onRefreshData={loadDatabaseData}
+                globalSearch={globalSearch}
+                onClearGlobalSearch={() => setGlobalSearch('')}
+              />
+            </div>
           )}
 
-          {(currentTab === 'history' || currentTab === 'reports') && (
-            <BillHistory
-              bills={bills}
-              profile={profile}
-              onRefreshData={loadDatabaseData}
-            />
+          {currentTab === 'history' && (
+            <div style={{ flex: 1, minHeight: 0, height: '100%', width: '100%', overflowY: 'auto', overflowX: 'hidden', WebkitOverflowScrolling: 'touch' }}>
+              <BillHistory
+                bills={bills}
+                profile={profile}
+                onRefreshData={loadDatabaseData}
+              />
+            </div>
+          )}
+
+          {currentTab === 'reports' && (
+            <div style={{ flex: 1, minHeight: 0, height: '100%', width: '100%', overflowY: 'auto', overflowX: 'hidden', WebkitOverflowScrolling: 'touch' }}>
+              <ReportsScreen
+                bills={bills}
+                profile={profile}
+              />
+            </div>
           )}
 
           {currentTab === 'settings' && (
-            <SettingsScreen
-              profile={profile}
-              bills={bills}
-              onUpdateProfile={setProfile}
-              onRefreshData={loadDatabaseData}
-              onOpenPrinterModal={() => setPrinterModalOpen(true)}
-            />
+            <div style={{ flex: 1, minHeight: 0, height: '100%', width: '100%', overflowY: 'auto', overflowX: 'hidden', WebkitOverflowScrolling: 'touch' }}>
+              <SettingsScreen
+                profile={profile}
+                bills={bills}
+                onUpdateProfile={setProfile}
+                onRefreshData={loadDatabaseData}
+                onOpenPrinterModal={() => setPrinterModalOpen(true)}
+              />
+            </div>
           )}
         </main>
       </div>

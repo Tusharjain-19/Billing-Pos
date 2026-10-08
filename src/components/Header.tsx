@@ -11,6 +11,7 @@ import {
   Smartphone,
 } from 'lucide-react';
 import { Capacitor } from '@capacitor/core';
+import { isElectronApp } from '../utils/electronStorage';
 import { BrandLogo } from './BrandLogo';
 import type { RestaurantProfile, TabKey } from '../types';
 
@@ -225,10 +226,10 @@ export const Header: React.FC<HeaderProps> = ({
           </button>
         )}
 
-        {/* Website Download App Button */}
-        {!Capacitor.isNativePlatform() && (
+        {/* Website Download App Button (Hidden on Android & PC Desktop) */}
+        {!Capacitor.isNativePlatform() && !isElectronApp() && (
           <a
-            href="/billing-pro-pos-release.apk"
+            href="./billing-pro-pos-release.apk"
             download="billing-pro-pos-release.apk"
             style={{
               display: 'flex',

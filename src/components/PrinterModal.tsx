@@ -140,10 +140,10 @@ export const PrinterModal: React.FC<PrinterModalProps> = ({
         0x1b, 0x40, // ESC @
         0x1b, 0x61, 0x01, // Center
         0x1b, 0x45, 0x01, // Bold ON
-        ...Array.from('*** BOOKMYDINE POS ***\n').map((c) => c.charCodeAt(0)),
+        ...Array.from('BILLING PRO POS\n').map((c) => c.charCodeAt(0)),
         0x1b, 0x45, 0x00,
-        ...Array.from('58MM/80MM BLUETOOTH TEST OK\n\n').map((c) => c.charCodeAt(0)),
-        ...Array.from('Ready for Real-time Orders\n\n\n\n').map((c) => c.charCodeAt(0)),
+        ...Array.from('PRINTER CONNECTED OK\n').map((c) => c.charCodeAt(0)),
+        ...Array.from('READY TO BILL!\n\n\n').map((c) => c.charCodeAt(0)),
         0x1d, 0x56, 0x42, 0x00, // Paper Cut
       ]);
 

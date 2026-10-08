@@ -2,6 +2,7 @@ import { jsPDF } from 'jspdf';
 import autoTable from 'jspdf-autotable';
 import type { Bill, Item, Category, RestaurantProfile } from '../types';
 import { saveAndShareFile } from './fileExport';
+import { renderRevenueTrendChart, renderPaymentModeDonutChart } from './chartRenderer';
 
 export interface PdfExportResult {
   success: boolean;
@@ -150,6 +151,38 @@ export async function exportBillsToPdf(
     doc.text(`Card: Rs. ${(cardPaise / 100).toFixed(0)}`, 160, curY + 20);
 
     curY += 28;
+
+    // 2.5 Visual Performance Charts (Real Canvas Rendered Graphs)
+    try {
+      const dateMap = new Map<string, { dateStr: string; amountPaise: number; count: number }>();
+      bills.forEach((b) => {
+        if (b.status === 'CANCELLED') return;
+        const d = new Date(b.createdAt);
+        const k = `${d.getMonth() + 1}/${d.getDate()}`;
+        const e = dateMap.get(k) || { dateStr: k, amountPaise: 0, count: 0 };
+        e.amountPaise += b.grandTotal;
+        e.count += 1;
+        dateMap.set(k, e);
+      });
+      const dayEntries = Array.from(dateMap.values());
+      const trendImg = renderRevenueTrendChart(dayEntries, 620, 220);
+      if (trendImg) {
+        doc.addImage(trendImg, 'PNG', 14, curY, 110, 42);
+      }
+
+      const payEntries = [
+        { mode: 'UPI', amountPaise: upiPaise, count: bills.filter((b) => b.paymentMode === 'upi').length, color: '#2563EB' },
+        { mode: 'Cash', amountPaise: cashPaise, count: bills.filter((b) => b.paymentMode === 'cash').length, color: '#10B981' },
+        { mode: 'Card', amountPaise: cardPaise, count: bills.filter((b) => b.paymentMode === 'card').length, color: '#8B5CF6' },
+      ];
+      const donutImg = renderPaymentModeDonutChart(payEntries, 420, 220);
+      if (donutImg) {
+        doc.addImage(donutImg, 'PNG', 128, curY, 68, 42);
+      }
+      curY += 46;
+    } catch {
+      // Continue cleanly if canvas is unavailable
+    }
 
     // 3. Invoices Table
     const tableBody = bills.map((b, index) => {

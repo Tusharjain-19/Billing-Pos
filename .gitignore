@@ -12,10 +12,14 @@ dist
 dist-ssr
 *.local
 
-# Android / Native builds & binaries (Do NOT push large APK/AAB)
+# Android & PC release outputs & binaries
 *.apk
 *.aab
+*.exe
+*.zip
+*.blockmap
 release/
+release-pc/
 public/*.apk
 public/*.aab
 mobile/android/.gradle/

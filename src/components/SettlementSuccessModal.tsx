@@ -145,83 +145,82 @@ export const SettlementSuccessModal: React.FC<SettlementSuccessModalProps> = ({
           <X size={18} />
         </button>
 
-        {/* Animated Green Circle with Pulsing Rings & Check Icon */}
+        {/* Animated Google Pay-Style Green Circle with Concentric Pulsing Ripples & Check Icon */}
         <div
           style={{
             position: 'relative',
-            width: '96px',
-            height: '96px',
+            width: '104px',
+            height: '104px',
             marginBottom: '20px',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
           }}
         >
-          {/* Outer glow ring */}
+          {/* Outer expanding ripple wave */}
           <div
             style={{
               position: 'absolute',
-              inset: '-10px',
+              inset: '-14px',
               borderRadius: '50%',
-              backgroundColor: 'rgba(16, 185, 129, 0.15)',
-              animation: 'pulseRing 1.8s infinite ease-in-out',
+              backgroundColor: 'rgba(16, 185, 129, 0.16)',
+              animation: 'gpayPulse 1.8s infinite ease-out',
             }}
           />
-          {/* Middle soft ring */}
+          {/* Middle soft ripple */}
           <div
             style={{
               position: 'absolute',
-              inset: '-4px',
+              inset: '-6px',
               borderRadius: '50%',
               backgroundColor: 'rgba(16, 185, 129, 0.25)',
+              animation: 'pulseRing 1.8s infinite ease-in-out',
             }}
           />
           {/* Main solid green circle */}
           <div
             style={{
               position: 'relative',
-              width: '84px',
-              height: '84px',
+              width: '88px',
+              height: '88px',
               borderRadius: '50%',
               backgroundColor: '#10B981',
-              boxShadow: '0 10px 25px rgba(16, 185, 129, 0.45)',
+              boxShadow: '0 12px 30px rgba(16, 185, 129, 0.42)',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
-              animation: 'bounceIn 0.5s cubic-bezier(0.34, 1.56, 0.64, 1)',
+              animation: 'gpayCheckPop 0.5s cubic-bezier(0.34, 1.56, 0.64, 1)',
             }}
           >
-            <Check size={48} color="#FFFFFF" strokeWidth={3.5} />
+            <Check size={52} color="#FFFFFF" strokeWidth={3.8} />
           </div>
         </div>
 
-        {/* Header Title */}
+        {/* Header Title (Google Pay Style) */}
         <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '6px' }}>
-          <Sparkles size={16} color="#10B981" />
           <h2
             style={{
               margin: 0,
-              fontSize: '22px',
+              fontSize: '23px',
               fontWeight: 900,
               color: '#0F172A',
               letterSpacing: '-0.02em',
             }}
           >
-            {title || 'Order Settled & Printed!'}
+            {title || 'Order Completed Successfully!'}
           </h2>
-          <Sparkles size={16} color="#10B981" />
         </div>
 
         {/* Subtitle */}
         <p
           style={{
             margin: '0 0 18px 0',
-            fontSize: '13px',
+            fontSize: '13.5px',
             color: '#64748B',
-            fontWeight: 500,
+            fontWeight: 550,
           }}
         >
-          {subtitle || `Order #${orderNumStr} has been recorded & thermal bill printed.`}
+          {subtitle || `Invoice #${orderNumStr} was processed successfully.`}
         </p>
 
         {/* Details Card */}

@@ -579,12 +579,8 @@ export const ReceiptPreviewModal: React.FC<ReceiptPreviewModalProps> = ({
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [isOpen, isEditing, step, paymentMode, cashTenderedRupees, currentBill]);
 
-  // Focus cash input on entering payment mode
-  useEffect(() => {
-    if (step === 'payment' && paymentMode === 'cash') {
-      setTimeout(() => cashInputRef.current?.focus(), 150);
-    }
-  }, [step, paymentMode]);
+  // Do NOT auto-focus cash input: User will click and enter amount if needed without unwanted cursor pre-select
+  // (Preserves clean UI and prevents mobile virtual keyboard from obscuring the bill)
 
   if (!isOpen || !currentBill) return null;
 
@@ -595,18 +591,18 @@ export const ReceiptPreviewModal: React.FC<ReceiptPreviewModalProps> = ({
   const shortfallPaise = Math.max(0, currentBill.grandTotal - cashTenderedPaise);
   const changeDuePaise = Math.max(0, cashTenderedPaise - currentBill.grandTotal);
 
-  // Compute Logo Dimensions based on setting
+  // Compute Logo Dimensions based on setting (Increased size for enhanced visibility)
   const getLogoDimensions = () => {
     switch (profile.billLogoSize) {
       case 'small':
-        return { maxHeight: '36px', maxWidth: '110px' };
+        return { maxHeight: '44px', maxWidth: '125px' };
       case 'large':
-        return { maxHeight: '68px', maxWidth: '170px' };
+        return { maxHeight: '78px', maxWidth: '190px' };
       case 'xlarge':
-        return { maxHeight: '84px', maxWidth: '210px' };
+        return { maxHeight: '96px', maxWidth: '230px' };
       case 'medium':
       default:
-        return { maxHeight: '52px', maxWidth: '140px' };
+        return { maxHeight: '62px', maxWidth: '160px' };
     }
   };
   const logoDims = getLogoDimensions();
@@ -740,7 +736,7 @@ export const ReceiptPreviewModal: React.FC<ReceiptPreviewModalProps> = ({
   const timeStr = billDate.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: false });
   const dateTimeFormatted = `${dateStr}, ${timeStr}`;
 
-  const activeLogoUrl = profile.logoUrl || DEFAULT_RESTAURANT_LOGO;
+  const activeLogoUrl = profile.logoUrl && !profile.logoUrl.startsWith('data:image/svg+xml') ? profile.logoUrl : './logo.png';
 
   return (
     <div
@@ -1426,19 +1422,21 @@ export const ReceiptPreviewModal: React.FC<ReceiptPreviewModalProps> = ({
             {/* Restaurant Profile Header with Brand Logo */}
             <div style={{ textAlign: 'center', marginBottom: '8px' }}>
               {/* Brand Logo (Custom Uploaded or Default Restaurant Emblem) */}
-              <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '6px' }}>
-                <img
-                  src={activeLogoUrl}
-                  alt={profile.name || 'Store Logo'}
-                  style={{
-                    maxHeight: logoDims.maxHeight,
-                    maxWidth: logoDims.maxWidth,
-                    objectFit: 'contain',
-                    display: 'block',
-                    margin: '0 auto',
-                  }}
-                />
-              </div>
+              {profile.printLogoOnThermal !== false && activeLogoUrl && (
+                <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '6px' }}>
+                  <img
+                    src={activeLogoUrl}
+                    alt={profile.name || 'Store Logo'}
+                    style={{
+                      maxHeight: logoDims.maxHeight,
+                      maxWidth: logoDims.maxWidth,
+                      objectFit: 'contain',
+                      display: 'block',
+                      margin: '0 auto',
+                    }}
+                  />
+                </div>
+              )}
 
               {/* Store Name */}
               <div style={{ fontSize: '15px', fontWeight: 900, letterSpacing: '0.5px', textTransform: 'uppercase' }}>

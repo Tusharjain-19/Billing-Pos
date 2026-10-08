@@ -32,6 +32,7 @@ import {
   Edit2
 } from 'lucide-react';
 import { Capacitor } from '@capacitor/core';
+import { isElectronApp } from '../utils/electronStorage';
 import type { Bill, Item, Category, RestaurantProfile, TabKey } from '../types';
 import { formatPaise, rupeesToPaise } from '../utils/currency';
 import { db } from '../db';
@@ -91,7 +92,6 @@ export const Dashboard: React.FC<DashboardProps> = ({
 
   // Quick Restock & Edit Modal state
   const [restockModalOpen, setRestockModalOpen] = useState<boolean>(false);
-  const [quickStockTargetItem, setQuickStockTargetItem] = useState<Item | null>(null);
   const [inlineAdjustNotice, setInlineAdjustNotice] = useState<string | null>(null);
   const [localStockOverrides, setLocalStockOverrides] = useState<Map<string, { stockQty: number; isOutOfStock: boolean; pricePaise?: number }>>(new Map());
   const [editingStockItem, setEditingStockItem] = useState<ItemSalesMetric | null>(null);
@@ -436,39 +436,6 @@ export const Dashboard: React.FC<DashboardProps> = ({
     }
   };
 
-  const handleSetExactStock = async (itemId: string, exactQty: number) => {
-    try {
-      const item = await db.items.get(itemId);
-      if (!item) return;
-
-      const safeQty = Math.max(0, exactQty);
-      const nextIsOut = safeQty <= 0;
-
-      setLocalStockOverrides((prev) => {
-        const next = new Map(prev);
-        const existing = next.get(itemId);
-        next.set(itemId, {
-          stockQty: safeQty,
-          isOutOfStock: nextIsOut,
-          pricePaise: existing?.pricePaise,
-        });
-        return next;
-      });
-
-      await db.items.update(itemId, {
-        stockQty: safeQty,
-        isOutOfStock: nextIsOut,
-        isActive: safeQty > 0,
-      });
-
-      setInlineAdjustNotice(`Updated ${item.shortName || item.name} stock to ${safeQty} portions`);
-      setTimeout(() => setInlineAdjustNotice(null), 3000);
-      await onRefreshData?.();
-    } catch (err: any) {
-      console.error('Failed to set stock:', err);
-    }
-  };
-
   const handleToggleOutOfStock = async (itemId: string, currentlyOut: boolean) => {
     try {
       const item = await db.items.get(itemId);
@@ -548,8 +515,8 @@ export const Dashboard: React.FC<DashboardProps> = ({
           </div>
         )}
 
-        {/* 0. WEBSITE DOWNLOAD APP BANNER */}
-        {!Capacitor.isNativePlatform() && (
+        {/* 0. WEBSITE DOWNLOAD APP BANNER (Hidden on Android & PC Desktop) */}
+        {!Capacitor.isNativePlatform() && !isElectronApp() && (
           <div
             style={{
               backgroundColor: '#EFF6FF',
@@ -590,7 +557,7 @@ export const Dashboard: React.FC<DashboardProps> = ({
             </div>
 
             <a
-              href="/billing-pro-pos-release.apk"
+              href="./billing-pro-pos-release.apk"
               download="billing-pro-pos-release.apk"
               style={{
                 display: 'inline-flex',
@@ -1094,11 +1061,14 @@ export const Dashboard: React.FC<DashboardProps> = ({
             backgroundColor: '#FFFFFF',
             border: '1px solid var(--border-color)',
             borderRadius: '20px',
-            padding: '24px',
+            padding: 'clamp(14px, 3vw, 22px)',
             boxShadow: '0 2px 6px rgba(0, 0, 0, 0.02)',
             display: 'flex',
             flexDirection: 'column',
-            gap: '18px',
+            gap: '16px',
+            width: '100%',
+            maxWidth: '100%',
+            boxSizing: 'border-box',
           }}
         >
           {/* Section Header with Tabs and Search */}
@@ -1115,8 +1085,8 @@ export const Dashboard: React.FC<DashboardProps> = ({
               </p>
             </div>
 
-            {/* Quick Actions */}
-            <div style={{ display: 'flex', gap: '10px', alignItems: 'center', flexWrap: 'wrap' }}>
+            {/* Quick Actions (1 Line) */}
+            <div style={{ display: 'flex', gap: '8px', alignItems: 'center', width: '100%', maxWidth: '380px' }}>
               {/* Search Bar */}
               <div
                 style={{
@@ -1125,8 +1095,9 @@ export const Dashboard: React.FC<DashboardProps> = ({
                   gap: '8px',
                   backgroundColor: '#F1F5F9',
                   borderRadius: '10px',
-                  padding: '6px 12px',
-                  width: '200px',
+                  padding: '7px 12px',
+                  flex: 1,
+                  minWidth: 0,
                 }}
               >
                 <Search size={14} color="#64748B" />
@@ -1156,15 +1127,17 @@ export const Dashboard: React.FC<DashboardProps> = ({
                 style={{
                   display: 'flex',
                   alignItems: 'center',
-                  gap: '6px',
-                  padding: '7px 14px',
+                  gap: '5px',
+                  padding: '7px 12px',
                   borderRadius: '10px',
                   backgroundColor: '#1E293B',
                   color: '#FFFFFF',
                   fontSize: '12px',
-                  fontWeight: 700,
+                  fontWeight: 750,
                   cursor: 'pointer',
                   border: 'none',
+                  flexShrink: 0,
+                  whiteSpace: 'nowrap',
                 }}
               >
                 <Plus size={14} />
@@ -1174,7 +1147,15 @@ export const Dashboard: React.FC<DashboardProps> = ({
           </div>
 
           {/* Filter Pills */}
-          <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
+          <div
+            style={{
+              display: 'flex',
+              gap: '8px',
+              flexWrap: 'wrap',
+              width: '100%',
+              boxSizing: 'border-box',
+            }}
+          >
             <button
               onClick={() => setStockTab('attention')}
               style={{
@@ -1189,6 +1170,8 @@ export const Dashboard: React.FC<DashboardProps> = ({
                 display: 'flex',
                 alignItems: 'center',
                 gap: '6px',
+                flexShrink: 0,
+                whiteSpace: 'nowrap',
               }}
             >
               <span>Needs Attention</span>
@@ -1219,6 +1202,8 @@ export const Dashboard: React.FC<DashboardProps> = ({
                 display: 'flex',
                 alignItems: 'center',
                 gap: '6px',
+                flexShrink: 0,
+                whiteSpace: 'nowrap',
               }}
             >
               <span>Out of Stock</span>
@@ -1249,6 +1234,8 @@ export const Dashboard: React.FC<DashboardProps> = ({
                 display: 'flex',
                 alignItems: 'center',
                 gap: '6px',
+                flexShrink: 0,
+                whiteSpace: 'nowrap',
               }}
             >
               <Flame size={13} />
@@ -1266,6 +1253,8 @@ export const Dashboard: React.FC<DashboardProps> = ({
                 fontSize: '12px',
                 fontWeight: 800,
                 cursor: 'pointer',
+                flexShrink: 0,
+                whiteSpace: 'nowrap',
               }}
             >
               <span>All Food Items ({activeItems.length})</span>
@@ -1284,7 +1273,7 @@ export const Dashboard: React.FC<DashboardProps> = ({
               </div>
             </div>
           ) : (
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: '12px' }}>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 280px), 1fr))', gap: '12px' }}>
               {filteredStockItems.map((item) => {
                 const isOut = item.isOutOfStock || (item.currentStock !== undefined && item.currentStock <= 0);
                 const isCritical = item.stockUrgency === 'critical';
@@ -1980,7 +1969,6 @@ export const Dashboard: React.FC<DashboardProps> = ({
             {/* Modal Body List */}
             <div style={{ padding: '16px 22px', overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: '10px' }}>
               {activeItems.map((item) => {
-                const currentQty = item.stockQty !== undefined ? item.stockQty : 0;
                 const isOut = item.isOutOfStock || (item.stockQty !== undefined && item.stockQty <= 0);
 
                 return (

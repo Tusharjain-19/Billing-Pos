@@ -2,7 +2,8 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <link rel="icon" type="image/jpeg" href="/billing-pro-logo.jpg" />
+    <link rel="icon" type="image/png" href="/favicon.png" />
+    <link rel="shortcut icon" href="/favicon.ico" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
     <meta name="theme-color" content="#ffffff" />
     <meta name="description" content="Billing Pro POS by BookMyDine QR | Offline-first high speed billing system." />
@@ -15,7 +16,56 @@
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
   </head>
   <body>
-    <div id="root"></div>
+    <div id="root">
+      <div style="height:100dvh;width:100vw;display:flex;flex-direction:column;align-items:center;justify-content:center;background-color:#FFFFFF;padding:24px;box-sizing:border-box;position:fixed;inset:0;font-family:'Plus Jakarta Sans',-apple-system,BlinkMacSystemFont,sans-serif;user-select:none;">
+        <div style="display:flex;flex-direction:column;align-items:center;text-align:center;max-width:360px;width:100%;">
+          
+          <!-- Animated Glow Card for Logo -->
+          <div style="position:relative;width:96px;height:96px;display:flex;align-items:center;justify-content:center;margin-bottom:20px;">
+            <div style="position:absolute;inset:-8px;border-radius:28px;background:radial-gradient(circle,rgba(37,99,235,0.18) 0%,rgba(16,185,129,0.08) 70%,transparent 100%);filter:blur(8px);animation:pulseHalo 2s infinite ease-in-out;"></div>
+            <div style="position:relative;width:86px;height:86px;border-radius:24px;background:#FFFFFF;border:1.5px solid #E2E8F0;box-shadow:0 12px 28px -6px rgba(15,23,42,0.12),0 4px 10px -2px rgba(15,23,42,0.04);display:flex;align-items:center;justify-content:center;padding:12px;box-sizing:border-box;">
+              <img src="/logo.png" alt="Billing Pro" style="width:100%;height:100%;object-fit:contain;" />
+            </div>
+          </div>
+
+          <!-- Brand Typography -->
+          <h1 style="margin:0 0 6px 0;font-size:26px;font-weight:900;color:#0F172A;letter-spacing:-0.03em;">
+            Billing <span style="color:#2563EB;">Pro</span>
+          </h1>
+
+          <p style="margin:0 0 24px 0;font-size:12.5px;color:#64748B;font-weight:700;letter-spacing:0.04em;text-transform:uppercase;">
+            Superfast Offline POS
+          </p>
+
+          <!-- Animated Progress Indicator -->
+          <div style="width:190px;height:5px;background-color:#F1F5F9;border-radius:999px;overflow:hidden;position:relative;margin-bottom:14px;box-shadow:inset 0 1px 2px rgba(0,0,0,0.06);">
+            <div style="position:absolute;top:0;bottom:0;width:75px;border-radius:999px;background:linear-gradient(90deg, #2563EB, #10B981);animation:loadingSweep 1.2s infinite ease-in-out;"></div>
+          </div>
+
+          <p style="margin:0;font-size:11.5px;color:#94A3B8;font-weight:600;letter-spacing:0.02em;">
+            Initializing Offline Engine...
+          </p>
+
+          <!-- Bottom Footer Badge -->
+          <div style="position:fixed;bottom:24px;display:flex;align-items:center;gap:6px;font-size:11px;font-weight:600;color:#94A3B8;">
+            <span>⚡ Powered by BookMyDine QR</span>
+            <span>•</span>
+            <span style="color:#10B981;">100% Offline</span>
+          </div>
+
+        </div>
+      </div>
+      <style>
+        @keyframes loadingSweep {
+          0% { left: -75px; }
+          100% { left: 190px; }
+        }
+        @keyframes pulseHalo {
+          0%, 100% { transform: scale(1); opacity: 0.8; }
+          50% { transform: scale(1.08); opacity: 1; }
+        }
+      </style>
+    </div>
     <script type="module" src="/src/main.tsx"></script>
   </body>
 </html>

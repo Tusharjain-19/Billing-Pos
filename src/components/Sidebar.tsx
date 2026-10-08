@@ -18,6 +18,7 @@ import {
   Smartphone,
 } from 'lucide-react';
 import { Capacitor } from '@capacitor/core';
+import { isElectronApp } from '../utils/electronStorage';
 import { BrandLogo } from './BrandLogo';
 import type { RestaurantProfile, TabKey } from '../types';
 export type { TabKey };
@@ -211,11 +212,11 @@ export const Sidebar: React.FC<SidebarProps> = ({
 
       {/* Bottom Profile & Account Card */}
       <div style={{ padding: '10px', borderTop: '1px solid var(--border-color)' }}>
-        {/* Website Download App Button */}
-        {!Capacitor.isNativePlatform() && (
+        {/* Website Download App Button (Hidden in Native Android & Desktop PC) */}
+        {!Capacitor.isNativePlatform() && !isElectronApp() && (
           <div style={{ marginBottom: '8px' }}>
             <a
-              href="/billing-pro-pos-release.apk"
+              href="./billing-pro-pos-release.apk"
               download="billing-pro-pos-release.apk"
               style={{
                 display: 'flex',
@@ -270,6 +271,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
               style={{
                 width: '36px',
                 height: '36px',
+                aspectRatio: '1 / 1',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
@@ -277,14 +279,14 @@ export const Sidebar: React.FC<SidebarProps> = ({
               }}
             >
               <img
-                src={profile.logoUrl && !profile.logoUrl.startsWith('data:image/svg+xml') ? profile.logoUrl : '/billing-pro-logo.jpg'}
+                src={profile.logoUrl && !profile.logoUrl.startsWith('data:image/svg+xml') ? profile.logoUrl : './logo.png'}
                 alt={profile.name}
                 onError={(e) => {
                   const target = e.currentTarget;
                   target.onerror = null;
-                  target.src = '/billing-pro-logo.jpg';
+                  target.src = './logo.png';
                 }}
-                style={{ width: '100%', height: '100%', objectFit: 'contain', display: 'block' }}
+                style={{ width: '100%', height: '100%', aspectRatio: '1 / 1', objectFit: 'contain', display: 'block' }}
               />
             </div>
 

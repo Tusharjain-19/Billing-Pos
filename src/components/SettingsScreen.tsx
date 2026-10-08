@@ -27,10 +27,23 @@ import {
   FileCode,
   Check,
   FileUp,
+  HardDrive,
+  FolderOpen,
+  FolderCheck,
+  Laptop,
 } from 'lucide-react';
 import { Capacitor } from '@capacitor/core';
 import type { RestaurantProfile, Bill, PaperWidth, TaxMode, BillMode } from '../types';
 import { db } from '../db';
+import {
+  isElectronApp,
+  getSavedHddStoragePath,
+  setSavedHddStoragePath,
+  isAutoBackupEnabled,
+  setAutoBackupEnabled,
+  pickHddStorageFolder,
+  saveDatabaseBackupToDrive,
+} from '../utils/electronStorage';
 import { exportBillsToExcel } from '../utils/excel';
 import { exportBillsToPdf } from '../utils/pdfExport';
 import { saveAndShareFile } from '../utils/fileExport';
@@ -98,6 +111,7 @@ export const SettingsScreen: React.FC<SettingsScreenProps> = ({
     profile.showQrOnBill !== undefined ? profile.showQrOnBill : profile.defaultBillMode !== 'normal'
   );
   const [billLogoSize, setBillLogoSize] = useState<'small' | 'medium' | 'large' | 'xlarge'>(profile.billLogoSize || 'medium');
+  const [printLogoOnThermal, setPrintLogoOnThermal] = useState<boolean>(profile.printLogoOnThermal ?? true);
   const [defaultPackagingCharge, setDefaultPackagingCharge] = useState<number>(profile.defaultPackagingCharge ?? 10);
 
   const [pin, setPin] = useState(profile.pin);
@@ -113,7 +127,6 @@ export const SettingsScreen: React.FC<SettingsScreenProps> = ({
   const [deleteConfirmationText, setDeleteConfirmationText] = useState<string>('');
   const [safeDeleteNotice, setSafeDeleteNotice] = useState<string | null>(null);
   const [pinModalOpen, setPinModalOpen] = useState<boolean>(false);
-  const [pendingAction, setPendingAction] = useState<(() => void) | null>(null);
 
   const [btConnected, setBtConnected] = useState<boolean>(isBluetoothPrinterConnected());
   const [btPrinterName, setBtPrinterName] = useState<string>(getSavedPrinterName());
@@ -127,6 +140,49 @@ export const SettingsScreen: React.FC<SettingsScreenProps> = ({
   const [backupRestoreMode, setBackupRestoreMode] = useState<'full' | 'menu_only'>('full');
   const [isRestoringBackup, setIsRestoringBackup] = useState<boolean>(false);
   const [restoreNotice, setRestoreNotice] = useState<string | null>(null);
+
+  // HDD / SSD Storage Allocation & Offline PC state
+  const [hddStoragePath, setHddStoragePath] = useState<string>(getSavedHddStoragePath());
+  const [autoHddBackup, setAutoHddBackup] = useState<boolean>(isAutoBackupEnabled());
+  const [hddBackupStatus, setHddBackupStatus] = useState<string | null>(null);
+  const [isSavingHddBackup, setIsSavingHddBackup] = useState<boolean>(false);
+  const isDesktop = isElectronApp();
+
+  const handlePickHddFolder = async () => {
+    try {
+      const selected = await pickHddStorageFolder();
+      if (selected) {
+        setHddStoragePath(selected);
+        setHddBackupStatus(`Storage folder set to: ${selected}`);
+        setTimeout(() => setHddBackupStatus(null), 5000);
+      }
+    } catch (err: any) {
+      setHddBackupStatus(`Error selecting folder: ${err.message}`);
+    }
+  };
+
+  const handleToggleAutoHddBackup = (enabled: boolean) => {
+    setAutoHddBackup(enabled);
+    setAutoBackupEnabled(enabled);
+  };
+
+  const handleManualHddBackup = async () => {
+    setIsSavingHddBackup(true);
+    setHddBackupStatus(null);
+    try {
+      const res = await saveDatabaseBackupToDrive(hddStoragePath);
+      if (res.success) {
+        setHddBackupStatus(`Database backup successfully saved: ${res.filePath}`);
+        setTimeout(() => setHddBackupStatus(null), 6000);
+      } else {
+        setHddBackupStatus(`Backup failed: ${res.error}`);
+      }
+    } catch (err: any) {
+      setHddBackupStatus(`Error: ${err.message}`);
+    } finally {
+      setIsSavingHddBackup(false);
+    }
+  };
 
   const parsedBackupInfo = React.useMemo(() => {
     const raw = backupTextInput.trim();
@@ -240,41 +296,13 @@ export const SettingsScreen: React.FC<SettingsScreenProps> = ({
     try {
       const testBuffer = new Uint8Array([
         0x1b, 0x40, // ESC @
-        0x1d, 0x4c, 0x00, 0x00, // GS L 0 0 (Zero Left Margin)
-        0x1b, 0x20, 0x00, // ESC SP 0 (Zero Char Space)
         0x1b, 0x61, 0x01, // Center
         0x1b, 0x45, 0x01, // Bold ON
-        0x1d, 0x21, 0x01, // Double height
-        ...Array.from('ORDER : # 0 0 0 0 1\n').map((c) => c.charCodeAt(0)),
-        0x1d, 0x21, 0x00,
+        ...Array.from('BILLING PRO POS\n').map((c) => c.charCodeAt(0)),
         0x1b, 0x45, 0x00,
-        0x1b, 0x61, 0x00, // Left
-        ...Array.from('--------------------------------\n').map((c) => c.charCodeAt(0)),
-        ...Array.from('Bill: TEST-001          12:00 PM\n').map((c) => c.charCodeAt(0)),
-        ...Array.from('Date: TODAY             TAKEAWAY\n').map((c) => c.charCodeAt(0)),
-        ...Array.from('================================\n').map((c) => c.charCodeAt(0)),
-        ...Array.from('ITEM              QTY RATE TOTAL\n').map((c) => c.charCodeAt(0)),
-        ...Array.from('--------------------------------\n').map((c) => c.charCodeAt(0)),
-        ...Array.from('Kulhad Chai         1x20 = 20.00\n').map((c) => c.charCodeAt(0)),
-        ...Array.from('Samosa Chaat        1x40 = 40.00\n').map((c) => c.charCodeAt(0)),
-        ...Array.from('--------------------------------\n').map((c) => c.charCodeAt(0)),
-        ...Array.from('Subtotal:                  60.00\n').map((c) => c.charCodeAt(0)),
-        ...Array.from('================================\n').map((c) => c.charCodeAt(0)),
-        0x1b, 0x45, 0x01,
-        0x1d, 0x21, 0x01,
-        ...Array.from('TOTAL:                     60.00\n').map((c) => c.charCodeAt(0)),
-        0x1d, 0x21, 0x00,
-        0x1b, 0x45, 0x00,
-        ...Array.from('================================\n').map((c) => c.charCodeAt(0)),
-        ...Array.from('Payment Mode:                UPI\n').map((c) => c.charCodeAt(0)),
-        ...Array.from('Status:                     PAID\n').map((c) => c.charCodeAt(0)),
-        ...Array.from('--------------------------------\n').map((c) => c.charCodeAt(0)),
-        0x1b, 0x61, 0x01,
-        0x1b, 0x45, 0x01,
-        ...Array.from('THANK YOU!\nVISIT AGAIN\n').map((c) => c.charCodeAt(0)),
-        0x1b, 0x45, 0x00,
-        ...Array.from('Powered by bookmydineqr\n\n\n\n').map((c) => c.charCodeAt(0)),
-        0x1d, 0x56, 0x42, 0x00, // Cut
+        ...Array.from('PRINTER CONNECTED OK\n').map((c) => c.charCodeAt(0)),
+        ...Array.from('READY TO BILL!\n\n\n').map((c) => c.charCodeAt(0)),
+        0x1d, 0x56, 0x42, 0x00, // Paper Cut
       ]);
       const res = await printViaBluetooth(testBuffer, true);
       if (res.success) {
@@ -349,6 +377,7 @@ export const SettingsScreen: React.FC<SettingsScreenProps> = ({
       defaultBillFormat,
       showQrOnBill,
       billLogoSize,
+      printLogoOnThermal,
       defaultPackagingCharge: Number(defaultPackagingCharge) >= 0 ? Number(defaultPackagingCharge) : 10,
       pin: pin.trim() || '1234',
       requirePinForActions,
@@ -787,7 +816,87 @@ export const SettingsScreen: React.FC<SettingsScreenProps> = ({
                   </div>
                 </div>
 
+                {/* Option: Do you need logo in bill or not */}
+                <div style={{
+                  width: '100%',
+                  marginTop: '14px',
+                  padding: '14px 16px',
+                  borderRadius: '12px',
+                  border: `1.5px solid ${printLogoOnThermal ? '#86EFAC' : '#E2E8F0'}`,
+                  backgroundColor: printLogoOnThermal ? '#F0FDF4' : '#F8FAFC',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'space-between',
+                  flexWrap: 'wrap',
+                  gap: '12px',
+                }}>
+                  <div>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                      <span style={{ fontSize: '13.5px', fontWeight: 800, color: '#0F172A' }}>
+                        🧾 Print Logo on Customer Bills
+                      </span>
+                      <span style={{
+                        fontSize: '10.5px',
+                        fontWeight: 800,
+                        padding: '2px 8px',
+                        borderRadius: '6px',
+                        backgroundColor: printLogoOnThermal ? '#DCFCE7' : '#E2E8F0',
+                        color: printLogoOnThermal ? '#15803D' : '#475569',
+                      }}>
+                        {printLogoOnThermal ? 'YES (Print Logo)' : 'NO (Text Only)'}
+                      </span>
+                    </div>
+                    <p style={{ fontSize: '11.5px', color: '#64748B', margin: '3px 0 0 0' }}>
+                      Do you need your restaurant logo printed at the top of the bill? Turn OFF to save paper or print plain text.
+                    </p>
+                  </div>
+
+                  <div style={{ display: 'flex', gap: '8px' }}>
+                    <button
+                      type="button"
+                      onClick={() => setPrintLogoOnThermal(true)}
+                      style={{
+                        padding: '8px 16px',
+                        borderRadius: '8px',
+                        border: `1.5px solid ${printLogoOnThermal ? '#16A34A' : '#CBD5E1'}`,
+                        backgroundColor: printLogoOnThermal ? '#16A34A' : '#FFFFFF',
+                        color: printLogoOnThermal ? '#FFFFFF' : '#334155',
+                        fontWeight: 750,
+                        fontSize: '12.5px',
+                        cursor: 'pointer',
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '6px',
+                      }}
+                    >
+                      <Check size={14} />
+                      <span>YES (Show Logo)</span>
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setPrintLogoOnThermal(false)}
+                      style={{
+                        padding: '8px 16px',
+                        borderRadius: '8px',
+                        border: `1.5px solid ${!printLogoOnThermal ? '#EF4444' : '#CBD5E1'}`,
+                        backgroundColor: !printLogoOnThermal ? '#EF4444' : '#FFFFFF',
+                        color: !printLogoOnThermal ? '#FFFFFF' : '#334155',
+                        fontWeight: 750,
+                        fontSize: '12.5px',
+                        cursor: 'pointer',
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '6px',
+                      }}
+                    >
+                      <X size={14} />
+                      <span>NO (Hide Logo)</span>
+                    </button>
+                  </div>
+                </div>
+
                 {/* Option for Size of Logo in Bill (Dedicated & Visual) */}
+                {printLogoOnThermal && (
                 <div style={{
                   width: '100%',
                   marginTop: '12px',
@@ -851,6 +960,7 @@ export const SettingsScreen: React.FC<SettingsScreenProps> = ({
                     })}
                   </div>
                 </div>
+                )}
               </div>
 
               <div>
@@ -1414,29 +1524,180 @@ export const SettingsScreen: React.FC<SettingsScreenProps> = ({
           </div>
 
           <p style={{ fontSize: '13px', color: 'var(--text-muted)', margin: '0 0 16px 0', lineHeight: 1.5 }}>
-            BookMyDine Bill works 100% offline with on-device SQLite / IndexedDB. Your phone is the sole storage.
-            Ensure you back up data periodically to Google Drive, SD Card, or WhatsApp.
+            BookMyDine POS works 100% offline with on-device SQLite / IndexedDB. Your local computer HDD/SSD is the sole storage.
+            Ensure you back up data periodically to your internal HDD/SSD, external drive, or USB drive.
           </p>
 
-          <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap', marginBottom: '20px' }}>
-            <button
-              onClick={handleFullBackup}
+          {/* LIGHT MODE BACKUP & STORAGE SECTION */}
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: '16px', marginBottom: '24px' }}>
+            {/* Card 1: Save Backup */}
+            <div
               style={{
+                backgroundColor: '#FFFFFF',
+                borderRadius: '16px',
+                border: '1.5px solid #E2E8F0',
+                padding: '18px 20px',
+                boxShadow: '0 2px 6px rgba(0,0,0,0.03)',
                 display: 'flex',
-                alignItems: 'center',
-                gap: '8px',
-                padding: '12px 18px',
-                borderRadius: '12px',
-                backgroundColor: 'var(--bg-surface-elevated)',
-                border: '1px solid var(--border-color)',
-                color: 'var(--text-main)',
-                fontSize: '13px',
-                fontWeight: 700,
+                flexDirection: 'column',
+                justifyContent: 'space-between',
+                gap: '12px',
               }}
             >
-              <Download size={16} />
-              <span>Full App Backup (.bmdbackup)</span>
-            </button>
+              <div>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '6px' }}>
+                  <div style={{ width: '32px', height: '32px', borderRadius: '8px', backgroundColor: '#F0FDF4', color: '#16A34A', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                    <Download size={18} />
+                  </div>
+                  <h4 style={{ fontSize: '15px', fontWeight: 800, margin: 0, color: '#0F172A' }}>
+                    Save Full Backup
+                  </h4>
+                </div>
+                <p style={{ fontSize: '12px', color: '#64748B', margin: 0, lineHeight: 1.4 }}>
+                  Export all dishes, invoices, GST rates & store profile into a secure offline JSON file.
+                </p>
+              </div>
+
+              <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
+                <button
+                  type="button"
+                  onClick={handleFullBackup}
+                  style={{
+                    flex: 1,
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    gap: '6px',
+                    padding: '10px 16px',
+                    borderRadius: '10px',
+                    backgroundColor: '#16A34A',
+                    color: '#FFFFFF',
+                    border: 'none',
+                    fontSize: '12.5px',
+                    fontWeight: 750,
+                    cursor: 'pointer',
+                  }}
+                >
+                  <Download size={15} />
+                  <span>Download Backup (.json)</span>
+                </button>
+
+                {isDesktop && (
+                  <button
+                    type="button"
+                    onClick={handleManualHddBackup}
+                    disabled={isSavingHddBackup}
+                    style={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '6px',
+                      padding: '10px 14px',
+                      borderRadius: '10px',
+                      backgroundColor: '#EFF6FF',
+                      color: '#2563EB',
+                      border: '1px solid #BFDBFE',
+                      fontSize: '12.5px',
+                      fontWeight: 750,
+                      cursor: isSavingHddBackup ? 'wait' : 'pointer',
+                    }}
+                  >
+                    <HardDrive size={15} />
+                    <span>{isSavingHddBackup ? 'Saving...' : 'Save to Drive'}</span>
+                  </button>
+                )}
+              </div>
+            </div>
+
+            {/* Card 2: PC Storage Drive Allocation */}
+            <div
+              style={{
+                backgroundColor: '#FFFFFF',
+                borderRadius: '16px',
+                border: '1.5px solid #E2E8F0',
+                padding: '18px 20px',
+                boxShadow: '0 2px 6px rgba(0,0,0,0.03)',
+                display: 'flex',
+                flexDirection: 'column',
+                justifyContent: 'space-between',
+                gap: '12px',
+              }}
+            >
+              <div>
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '6px' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                    <div style={{ width: '32px', height: '32px', borderRadius: '8px', backgroundColor: '#EFF6FF', color: '#2563EB', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                      <HardDrive size={18} />
+                    </div>
+                    <h4 style={{ fontSize: '15px', fontWeight: 800, margin: 0, color: '#0F172A' }}>
+                      HDD / SSD Drive Storage
+                    </h4>
+                  </div>
+                  <span style={{ fontSize: '10.5px', fontWeight: 800, backgroundColor: '#DCFCE7', color: '#166534', padding: '2px 8px', borderRadius: '6px' }}>
+                    100% OFFLINE
+                  </span>
+                </div>
+
+                <div style={{ fontSize: '11px', color: '#64748B', marginBottom: '4px' }}>
+                  Target Drive Folder:
+                </div>
+                <div
+                  style={{
+                    fontFamily: 'monospace',
+                    fontSize: '11.5px',
+                    color: '#0F172A',
+                    backgroundColor: '#F8FAFC',
+                    padding: '6px 10px',
+                    borderRadius: '8px',
+                    border: '1px solid #E2E8F0',
+                    overflowX: 'auto',
+                    whiteSpace: 'nowrap',
+                  }}
+                >
+                  {hddStoragePath || 'Default PC Local Storage (%APPDATA%)'}
+                </div>
+              </div>
+
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '8px' }}>
+                <label style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '12px', fontWeight: 650, color: '#334155', cursor: 'pointer' }}>
+                  <input
+                    type="checkbox"
+                    checked={autoHddBackup}
+                    onChange={(e) => handleToggleAutoHddBackup(e.target.checked)}
+                    style={{ width: '15px', height: '15px', accentColor: '#16A34A' }}
+                  />
+                  <span>Daily Auto-Backup</span>
+                </label>
+
+                {isDesktop && (
+                  <button
+                    type="button"
+                    onClick={handlePickHddFolder}
+                    style={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '5px',
+                      padding: '6px 12px',
+                      borderRadius: '8px',
+                      backgroundColor: '#F1F5F9',
+                      border: '1px solid #CBD5E1',
+                      color: '#1E293B',
+                      fontSize: '11.5px',
+                      fontWeight: 700,
+                      cursor: 'pointer',
+                    }}
+                  >
+                    <FolderOpen size={14} />
+                    <span>Change Folder</span>
+                  </button>
+                )}
+              </div>
+
+              {hddBackupStatus && (
+                <div style={{ fontSize: '11.5px', color: '#166534', backgroundColor: '#DCFCE7', padding: '6px 10px', borderRadius: '6px', fontWeight: 650 }}>
+                  {hddBackupStatus}
+                </div>
+              )}
+            </div>
           </div>
 
           {/* ENTER BACKUP DATA TO RESET SETUP */}
@@ -1468,10 +1729,10 @@ export const SettingsScreen: React.FC<SettingsScreenProps> = ({
                 </div>
                 <div>
                   <h4 style={{ fontSize: '15px', fontWeight: 800, margin: 0, color: '#0F172A' }}>
-                    Enter Backup Data to Reset Setup
+                    Restore Database from Backup
                   </h4>
                   <p style={{ fontSize: '12px', color: '#64748B', margin: '2px 0 0 0' }}>
-                    Paste backup JSON data or choose a backup file to reset and restore your POS setup.
+                    Upload or paste backup data to restore your menu, dishes, and sales records.
                   </p>
                 </div>
               </div>
