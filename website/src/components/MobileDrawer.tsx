@@ -17,6 +17,7 @@ export const MobileDrawer: React.FC<MobileDrawerProps> = ({
 
   const links = [
     { id: 'home', label: 'Home' },
+    { id: 'demo', label: 'Demo Video' },
     { id: 'features', label: 'Features' },
     { id: 'printer', label: 'Receipt Print & UPI QR Test' },
     { id: 'downloads', label: 'Downloads & Hardware' },

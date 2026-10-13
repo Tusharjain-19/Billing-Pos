@@ -224,8 +224,36 @@ export const Hero: React.FC<HeroProps> = ({ onDownloadTrigger, onNavigatePage })
 
           </div>
 
-          {/* Clean Secondary Navigation Buttons (NO BROWSER DEMO, NO EMOJIS) */}
+          {/* Clean Secondary Navigation Buttons */}
           <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap', marginBottom: '28px' }}>
+            <a
+              href="#demo-video"
+              onClick={(e) => {
+                e.preventDefault();
+                const el = document.getElementById('demo-video');
+                if (el) {
+                  const headerOffset = 70;
+                  const elementPosition = el.getBoundingClientRect().top;
+                  const offsetPosition = elementPosition + window.pageYOffset - headerOffset;
+                  window.scrollTo({
+                    top: offsetPosition,
+                    behavior: 'smooth',
+                  });
+                  const vid = el.querySelector('video');
+                  if (vid && vid.paused) {
+                    vid.play().catch(() => {});
+                  }
+                }
+              }}
+              className="btn btn-secondary"
+              style={{ fontSize: '13px', padding: '9px 16px', backgroundColor: '#F0FDF4', borderColor: '#86EFAC', color: '#15803D' }}
+            >
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
+                <polygon points="5 3 19 12 5 21 5 3"></polygon>
+              </svg>
+              <span>Watch Demo Video</span>
+            </a>
+
             <button
               type="button"
               onClick={() => onNavigatePage('features')}

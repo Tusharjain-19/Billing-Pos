@@ -1,10 +1,11 @@
-import React, { useRef, useState } from 'react';
+import React, { useRef, useState, useEffect } from 'react';
 
 export const VideoDemo: React.FC = () => {
   const videoRef = useRef<HTMLVideoElement>(null);
   const [isPlaying, setIsPlaying] = useState<boolean>(false);
   const [isMuted, setIsMuted] = useState<boolean>(false);
   const [activeChapter, setActiveChapter] = useState<number>(0);
+  const [autoplayMutedNotice, setAutoplayMutedNotice] = useState<boolean>(false);
 
   const chapters = [
     { time: 0, label: '0. Industrial POS Intro', desc: 'Welcome to Billing Pro POS • Industrial speed & offline-first architecture' },
@@ -14,6 +15,48 @@ export const VideoDemo: React.FC = () => {
     { time: 32.81, label: '4. Bluetooth Thermal Print', desc: 'Sub-second ESC/POS receipt dispatch & sequential tax invoice ledger' },
     { time: 41.38, label: '5. Statutory GST Reports', desc: 'GSTR-1 ready tax breakdown, sales velocity & dining rush heatmaps' },
   ];
+
+  // Auto-scroll and start video immediately upon entering the website
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      const section = document.getElementById('demo-video');
+      if (section) {
+        const headerOffset = 70;
+        const elementPosition = section.getBoundingClientRect().top;
+        const offsetPosition = elementPosition + window.pageYOffset - headerOffset;
+        window.scrollTo({
+          top: offsetPosition,
+          behavior: 'smooth',
+        });
+      }
+
+      if (videoRef.current) {
+        // Attempt unmuted playback first; if browser blocks unmuted autoplay, immediately fallback to muted autoplay
+        const playPromise = videoRef.current.play();
+        if (playPromise !== undefined) {
+          playPromise
+            .then(() => {
+              setIsPlaying(true);
+              setIsMuted(false);
+              setAutoplayMutedNotice(false);
+            })
+            .catch(() => {
+              if (videoRef.current) {
+                videoRef.current.muted = true;
+                setIsMuted(true);
+                setAutoplayMutedNotice(true);
+                videoRef.current
+                  .play()
+                  .then(() => setIsPlaying(true))
+                  .catch(() => {});
+              }
+            });
+        }
+      }
+    }, 450);
+
+    return () => clearTimeout(timer);
+  }, []);
 
   const handlePlayToggle = () => {
     if (!videoRef.current) return;
@@ -26,10 +69,21 @@ export const VideoDemo: React.FC = () => {
     }
   };
 
+  const handleUnmute = () => {
+    if (!videoRef.current) return;
+    videoRef.current.muted = false;
+    setIsMuted(false);
+    setAutoplayMutedNotice(false);
+  };
+
   const handleMuteToggle = () => {
     if (!videoRef.current) return;
-    videoRef.current.muted = !isMuted;
-    setIsMuted(!isMuted);
+    const nextMuted = !isMuted;
+    videoRef.current.muted = nextMuted;
+    setIsMuted(nextMuted);
+    if (!nextMuted) {
+      setAutoplayMutedNotice(false);
+    }
   };
 
   const jumpToTime = (seconds: number, index: number) => {
@@ -43,7 +97,7 @@ export const VideoDemo: React.FC = () => {
   };
 
   return (
-    <section id="demo-video" className="section" style={{ backgroundColor: '#F9FAFB', borderTop: '1px solid var(--border-color)', borderBottom: '1px solid var(--border-color)' }}>
+    <section id="demo-video" className="section" style={{ scrollMarginTop: '70px', backgroundColor: '#F9FAFB', borderTop: '1px solid var(--border-color)', borderBottom: '1px solid var(--border-color)' }}>
       <div className="container">
         
         {/* Section Header - High Contrast Light Mode */}
@@ -105,8 +159,16 @@ export const VideoDemo: React.FC = () => {
               ref={videoRef}
               src="assets/demo/billing_pos_demo.mp4?v=2"
               poster="assets/demo/billing_pos_demo.jpg?v=2"
+              preload="auto"
               playsInline
               muted={isMuted}
+              onClick={() => {
+                if (autoplayMutedNotice && isMuted) {
+                  handleUnmute();
+                } else {
+                  handlePlayToggle();
+                }
+              }}
               onPlay={() => setIsPlaying(true)}
               onPause={() => setIsPlaying(false)}
               onTimeUpdate={() => {
@@ -119,8 +181,44 @@ export const VideoDemo: React.FC = () => {
                 else if (ct < 41.38) setActiveChapter(4);
                 else setActiveChapter(5);
               }}
-              style={{ width: '100%', height: 'auto', display: 'block', maxHeight: '560px' }}
+              style={{ width: '100%', height: 'auto', display: 'block', maxHeight: '560px', cursor: 'pointer' }}
             />
+
+            {/* Click to Unmute Voiceover Floating Pill (when browser starts playback muted) */}
+            {autoplayMutedNotice && isMuted && isPlaying && (
+              <button
+                type="button"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  handleUnmute();
+                }}
+                aria-label="Click to unmute Indian English voiceover"
+                style={{
+                  position: 'absolute',
+                  top: '16px',
+                  right: '16px',
+                  zIndex: 25,
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '8px',
+                  backgroundColor: '#15803D',
+                  color: '#FFFFFF',
+                  border: '2px solid #FFFFFF',
+                  boxShadow: '0 4px 16px rgba(0, 0, 0, 0.25)',
+                  padding: '8px 16px',
+                  fontWeight: 700,
+                  fontSize: '13px',
+                  cursor: 'pointer',
+                  borderRadius: '0px',
+                }}
+              >
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                  <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
+                  <path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"></path>
+                </svg>
+                <span>🔊 Click to Unmute Voiceover</span>
+              </button>
+            )}
 
             {/* Overlay Play Button when paused */}
             {!isPlaying && (
@@ -145,6 +243,7 @@ export const VideoDemo: React.FC = () => {
                   cursor: 'pointer',
                   boxShadow: '0 8px 24px rgba(0,0,0,0.25)',
                   transition: 'transform 0.1s ease',
+                  zIndex: 10,
                 }}
               >
                 <svg width="32" height="32" viewBox="0 0 24 24" fill="currentColor">
@@ -191,9 +290,16 @@ export const VideoDemo: React.FC = () => {
                 type="button"
                 onClick={handleMuteToggle}
                 className="btn btn-sm"
-                style={{ padding: '6px 12px', backgroundColor: '#FFFFFF', color: '#374151', border: '1px solid #D1D5DB', borderRadius: '0px' }}
+                style={{
+                  padding: '6px 12px',
+                  backgroundColor: isMuted ? '#F0FDF4' : '#FFFFFF',
+                  color: isMuted ? '#15803D' : '#374151',
+                  border: isMuted ? '1px solid #86EFAC' : '1px solid #D1D5DB',
+                  borderRadius: '0px',
+                  fontWeight: isMuted ? 700 : 500,
+                }}
               >
-                {isMuted ? 'Unmute Audio' : 'Mute Audio'}
+                {isMuted ? '🔊 Unmute Voiceover' : '🔇 Mute Audio'}
               </button>
             </div>
 

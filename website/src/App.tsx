@@ -27,6 +27,7 @@ export const App: React.FC = () => {
   // Parse page from hash
   const parsePageFromHash = (): PageId => {
     const hash = window.location.hash.replace('#', '').toLowerCase();
+    if (hash === 'demo' || hash === 'demo-video') return 'home';
     if (hash === 'features') return 'features';
     if (hash === 'printer' || hash === 'simulator') return 'printer';
     if (hash === 'downloads' || hash === 'hardware' || hash === 'specs') return 'downloads';
@@ -41,8 +42,11 @@ export const App: React.FC = () => {
     setCurrentPage(parsePageFromHash());
 
     const onHashChange = () => {
+      const hash = window.location.hash.replace('#', '').toLowerCase();
       setCurrentPage(parsePageFromHash());
-      window.scrollTo({ top: 0, behavior: 'smooth' });
+      if (hash !== 'demo-video' && hash !== 'demo') {
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      }
     };
 
     window.addEventListener('hashchange', onHashChange);
@@ -64,6 +68,29 @@ export const App: React.FC = () => {
   }, [currentPage]);
 
   const navigateToPage = (page: string) => {
+    if (page === 'demo' || page === 'demo-video') {
+      if (currentPage !== 'home') {
+        setCurrentPage('home');
+      }
+      window.location.hash = '#demo-video';
+      setTimeout(() => {
+        const el = document.getElementById('demo-video');
+        if (el) {
+          const headerOffset = 70;
+          const elementPosition = el.getBoundingClientRect().top;
+          const offsetPosition = elementPosition + window.pageYOffset - headerOffset;
+          window.scrollTo({
+            top: offsetPosition,
+            behavior: 'smooth',
+          });
+          const vid = el.querySelector('video');
+          if (vid && vid.paused) {
+            vid.play().catch(() => {});
+          }
+        }
+      }, 100);
+      return;
+    }
     const targetPage = (page as PageId) || 'home';
     setCurrentPage(targetPage);
     window.location.hash = '#' + targetPage;
