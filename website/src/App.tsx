@@ -398,7 +398,7 @@ export const App: React.FC = () => {
               </div>
             </div>
 
-            <Contact />
+            <Contact onShowToast={showToast} />
           </div>
         )}
 
@@ -428,6 +428,7 @@ export const App: React.FC = () => {
           <NotFoundPage
             onReturnHome={() => navigateToPage('home')}
             onDownloadTrigger={handleDownload}
+            onNavigatePage={navigateToPage}
           />
         )}
 

@@ -281,10 +281,9 @@ export const Hero: React.FC<HeroProps> = ({ onDownloadTrigger, onNavigatePage })
               <span>Test Receipt Printing</span>
             </button>
 
-            <a
-              href="https://www.tusharjain.in/contact"
-              target="_blank"
-              rel="noopener noreferrer"
+            <button
+              type="button"
+              onClick={() => onNavigatePage('contact')}
               className="btn btn-secondary"
               style={{ fontSize: '13px', padding: '9px 16px' }}
             >
@@ -292,13 +291,8 @@ export const Hero: React.FC<HeroProps> = ({ onDownloadTrigger, onNavigatePage })
                 <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
                 <circle cx="12" cy="7" r="4"></circle>
               </svg>
-              <span>Contact Developer (tusharjain.in)</span>
-              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path>
-                <polyline points="15 3 21 3 21 9"></polyline>
-                <line x1="10" y1="14" x2="21" y2="3"></line>
-              </svg>
-            </a>
+              <span>Contact Support</span>
+            </button>
           </div>
 
           {/* 4 Enhanced Metric Highlights with Dedicated Pure SVG Icons */}

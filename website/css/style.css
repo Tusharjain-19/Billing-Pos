@@ -1311,11 +1311,11 @@ img, video, svg {
    ========================================================================== */
 
 .site-footer {
-  background-color: #0F172A;
-  color: #94A3B8;
-  border-top: 2px solid #1E293B;
-  padding: 56px 0 28px;
-  font-size: 12px;
+  background-color: #FFFFFF;
+  color: #374151;
+  border-top: 2px solid #E2E8F0;
+  padding: 48px 0 24px;
+  font-size: 13px;
   position: relative;
   z-index: 10;
 }
@@ -1323,42 +1323,43 @@ img, video, svg {
 .footer-top-grid {
   display: grid;
   grid-template-columns: 1.4fr 1fr 1fr 1fr 1fr;
-  gap: 36px;
+  gap: 32px;
   padding-bottom: 36px;
-  border-bottom: 1px solid #1E293B;
+  border-bottom: 1px solid #E2E8F0;
 }
 
 .footer-brand h4 {
-  font-size: 16px;
-  font-weight: 700;
-  color: #FFFFFF;
-  margin-bottom: 8px;
+  font-size: 17px;
+  font-weight: 800;
+  color: #0F172A;
+  margin-bottom: 4px;
+  letter-spacing: -0.02em;
 }
 
 .footer-brand p {
   line-height: 1.6;
   margin-bottom: 16px;
-  color: #94A3B8;
+  color: #475569;
 }
 
 .footer-badge-offline {
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  background-color: #1E293B;
-  color: #22C55E;
+  background-color: #F0FDF4;
+  color: #15803D;
   padding: 4px 10px;
-  border: 1px solid #334155;
+  border: 1px solid #86EFAC;
   font-size: 11px;
-  font-weight: 600;
+  font-weight: 700;
 }
 
 .footer-col h5 {
   font-size: 12px;
-  font-weight: 700;
+  font-weight: 800;
   text-transform: uppercase;
   letter-spacing: 0.06em;
-  color: #FFFFFF;
+  color: #0F172A;
   margin-bottom: 14px;
 }
 
@@ -1367,15 +1368,18 @@ img, video, svg {
   display: flex;
   flex-direction: column;
   gap: 8px;
+  padding: 0;
+  margin: 0;
 }
 
 .footer-links a {
-  color: #CBD5E1;
+  color: #475569;
+  text-decoration: none;
   transition: color 0.15s ease;
 }
 
 .footer-links a:hover {
-  color: #FFFFFF;
+  color: #15803D;
   text-decoration: underline;
 }
 
@@ -1383,11 +1387,11 @@ img, video, svg {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding-top: 24px;
+  padding-top: 20px;
   flex-wrap: wrap;
   gap: 16px;
-  font-size: 11px;
-  color: #94A3B8;
+  font-size: 12px;
+  color: #64748B;
 }
 
 .footer-meta-right {
@@ -1399,17 +1403,18 @@ img, video, svg {
 
 .btn-cookie-manage {
   background: none;
-  border: 1px solid #334155;
-  color: #94A3B8;
+  border: 1px solid #CBD5E1;
+  color: #475569;
   padding: 4px 10px;
   font-size: 11px;
   cursor: pointer;
   transition: all 0.15s ease;
+  border-radius: 0px;
 }
 
 .btn-cookie-manage:hover {
-  background-color: #1E293B;
-  color: #FFFFFF;
+  background-color: #F1F5F9;
+  color: #0F172A;
 }
 
 /* ==========================================================================

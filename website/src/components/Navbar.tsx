@@ -1,4 +1,5 @@
 import React from 'react';
+import logoImg from '../../assets/brand/logo.png';
 
 interface NavbarProps {
   currentPage: string;
@@ -29,7 +30,7 @@ export const Navbar: React.FC<NavbarProps> = ({
     <header className="site-header">
       <div className="container header-inner">
         
-        {/* Brand Header */}
+        {/* Brand Header with Crisp High-Contrast Logo */}
         <a
           href="#home"
           onClick={(e) => {
@@ -42,23 +43,29 @@ export const Navbar: React.FC<NavbarProps> = ({
         >
           <div
             style={{
-              width: '40px',
-              height: '40px',
+              width: '42px',
+              height: '42px',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
-              flexShrink: 0
+              flexShrink: 0,
+              backgroundColor: '#FFFFFF',
+              border: '1px solid #D1D5DB',
+              padding: '3px',
+              boxShadow: '0 1px 3px rgba(0,0,0,0.06)'
             }}
           >
             <img
-              src="assets/brand/logo.png"
+              src={logoImg || 'assets/brand/logo.png'}
               alt="Billing Pro POS Logo"
+              onError={(e) => {
+                (e.currentTarget as HTMLImageElement).src = 'assets/brand/logo.png';
+              }}
               style={{
                 width: '100%',
                 height: '100%',
                 objectFit: 'contain',
-                display: 'block',
-                filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.08))'
+                display: 'block'
               }}
             />
           </div>
@@ -69,28 +76,41 @@ export const Navbar: React.FC<NavbarProps> = ({
           </div>
         </a>
 
-        {/* Multipage Navigation Links */}
+        {/* Multipage Navigation Links - Consistent Industrial Light-Mode Active State */}
         <nav aria-label="Primary Navigation">
           <ul className="nav-links">
-            {navItems.map((item) => (
-              <li key={item.id} className="nav-item">
-                <a
-                  href={`#${item.id}`}
-                  onClick={(e) => {
-                    e.preventDefault();
-                    onNavigatePage(item.id);
-                  }}
-                  className={currentPage === item.id ? 'active' : ''}
-                  style={{
-                    backgroundColor: currentPage === item.id ? '#1E293B' : 'transparent',
-                    color: currentPage === item.id ? '#FFFFFF' : 'var(--text-body)',
-                    fontWeight: currentPage === item.id ? 700 : 600,
-                  }}
-                >
-                  {item.label}
-                </a>
-              </li>
-            ))}
+            {navItems.map((item) => {
+              const isActive = currentPage === item.id;
+              return (
+                <li key={item.id} className="nav-item">
+                  <a
+                    href={`#${item.id}`}
+                    onClick={(e) => {
+                      e.preventDefault();
+                      onNavigatePage(item.id);
+                    }}
+                    className={isActive ? 'active' : ''}
+                    style={{
+                      backgroundColor: isActive ? '#F0FDF4' : 'transparent',
+                      color: isActive ? '#15803D' : '#374151',
+                      borderColor: isActive ? '#86EFAC' : 'transparent',
+                      fontWeight: isActive ? 700 : 600,
+                      padding: '6px 12px',
+                      borderRadius: '0px',
+                      borderWidth: '1px',
+                      borderStyle: 'solid',
+                      fontSize: '13px',
+                      transition: 'all 0.15s ease',
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '4px'
+                    }}
+                  >
+                    {item.label}
+                  </a>
+                </li>
+              );
+            })}
           </ul>
         </nav>
 

@@ -1,4 +1,5 @@
 import React from 'react';
+import logoImg from '../../assets/brand/logo.png';
 
 interface FooterProps {
   onOpenCookieSettings: () => void;
@@ -14,124 +15,209 @@ export const Footer: React.FC<FooterProps> = ({
   const currentYear = new Date().getFullYear();
 
   return (
-    <footer className="site-footer">
+    <footer
+      className="site-footer"
+      style={{
+        backgroundColor: '#FFFFFF',
+        borderTop: '2px solid #E2E8F0',
+        color: '#374151',
+        padding: '48px 0 24px',
+        fontSize: '13px',
+      }}
+    >
       <div className="container">
+
+        {/* Master Architectural Value Banner */}
+        <div
+          style={{
+            display: 'grid',
+            gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))',
+            gap: '16px',
+            padding: '16px 20px',
+            backgroundColor: '#F8FAFC',
+            border: '1px solid #E2E8F0',
+            marginBottom: '40px',
+          }}
+        >
+          <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+            <span style={{ width: '8px', height: '8px', backgroundColor: '#15803D', display: 'inline-block' }}></span>
+            <span style={{ fontSize: '12px', fontWeight: 700, color: '#0F172A' }}>100% FREE &amp; OPEN SOURCE</span>
+          </div>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+            <span style={{ width: '8px', height: '8px', backgroundColor: '#0284C7', display: 'inline-block' }}></span>
+            <span style={{ fontSize: '12px', fontWeight: 700, color: '#0F172A' }}>100% OFFLINE LOCAL STORAGE</span>
+          </div>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+            <span style={{ width: '8px', height: '8px', backgroundColor: '#D97706', display: 'inline-block' }}></span>
+            <span style={{ fontSize: '12px', fontWeight: 700, color: '#0F172A' }}>ANY THERMAL PRINTER (58/80MM)</span>
+          </div>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+            <span style={{ width: '8px', height: '8px', backgroundColor: '#7C3AED', display: 'inline-block' }}></span>
+            <span style={{ fontSize: '12px', fontWeight: 700, color: '#0F172A' }}>DYNAMIC BHARAT UPI QR (&#8377;)</span>
+          </div>
+        </div>
         
-        <div className="footer-top-grid">
+        {/* Main Footer Columns */}
+        <div
+          style={{
+            display: 'grid',
+            gridTemplateColumns: '1.4fr 1fr 1fr 1fr 1fr',
+            gap: '32px',
+            paddingBottom: '36px',
+            borderBottom: '1px solid #E2E8F0',
+          }}
+          className="footer-grid-responsive"
+        >
           
-          {/* Col 1: Brand Info with Real Logo */}
-          <div className="footer-brand">
+          {/* Col 1: Brand Info with Crisp Official Logo */}
+          <div>
             <a
               href="#home"
               onClick={(e) => {
                 e.preventDefault();
                 onNavigatePage('home');
               }}
-              style={{ display: 'inline-flex', alignItems: 'center', gap: '10px', marginBottom: '12px' }}
+              style={{ display: 'inline-flex', alignItems: 'center', gap: '12px', marginBottom: '14px', textDecoration: 'none' }}
               title="Return to top"
             >
-              <div style={{ width: '38px', height: '38px', flexShrink: 0 }}>
+              <div
+                style={{
+                  width: '42px',
+                  height: '42px',
+                  flexShrink: 0,
+                  backgroundColor: '#FFFFFF',
+                  border: '1px solid #D1D5DB',
+                  padding: '3px',
+                  boxShadow: '0 1px 3px rgba(0,0,0,0.06)'
+                }}
+              >
                 <img
-                  src="assets/brand/logo.png"
+                  src={logoImg || 'assets/brand/logo.png'}
                   alt="Billing Pro POS Logo"
-                  style={{ width: '100%', height: '100%', objectFit: 'contain' }}
+                  onError={(e) => {
+                    (e.currentTarget as HTMLImageElement).src = 'assets/brand/logo.png';
+                  }}
+                  style={{ width: '100%', height: '100%', objectFit: 'contain', display: 'block' }}
                 />
               </div>
-              <h4 style={{ margin: 0, fontSize: '17px', color: '#FFFFFF' }}>BILLING PRO POS</h4>
+              <div>
+                <h4 style={{ margin: 0, fontSize: '17px', fontWeight: 800, color: '#0F172A', letterSpacing: '-0.02em' }}>
+                  BILLING PRO POS
+                </h4>
+                <span style={{ fontSize: '10px', fontFamily: 'var(--font-mono)', color: '#64748B', fontWeight: 700 }}>
+                  OFFLINE RESTAURANT &amp; RETAIL POS
+                </span>
+              </div>
             </a>
 
-            <p style={{ lineHeight: '1.6', color: '#94A3B8', fontSize: '12px' }}>
-              Free, fast offline billing software for restaurants, cafés, dhabas, bakeries, and retail counters. Zero internet needed.
+            <p style={{ lineHeight: '1.6', color: '#475569', fontSize: '12px', marginBottom: '16px' }}>
+              Free, fast offline billing software for restaurants, cafes, dhabas, sweet shops, bakeries, and retail counters. Zero internet needed, zero cloud subscriptions.
             </p>
 
-            <div className="footer-badge-offline" style={{ marginTop: '10px' }}>
-              <span className="pulse-dot" style={{ width: '6px', height: '6px' }}></span>
-              <span>100% OFFLINE &bull; NO INTERNET NEEDED</span>
+            <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
+              <span style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', backgroundColor: '#F0FDF4', color: '#15803D', padding: '3px 8px', border: '1px solid #86EFAC', fontSize: '11px', fontWeight: 700 }}>
+                <span className="pulse-dot" style={{ width: '6px', height: '6px', backgroundColor: '#15803D' }}></span>
+                <span>PRODUCTION READY v1.0</span>
+              </span>
+              <a
+                href="https://github.com/Tusharjain-19/Billing-Pos"
+                target="_blank"
+                rel="noopener noreferrer"
+                style={{ display: 'inline-flex', alignItems: 'center', gap: '4px', backgroundColor: '#F1F5F9', color: '#334155', padding: '3px 8px', border: '1px solid #CBD5E1', fontSize: '11px', fontWeight: 600, textDecoration: 'none' }}
+              >
+                <span>GitHub Repo</span>
+              </a>
             </div>
           </div>
 
           {/* Col 2: Navigation Pages */}
-          <div className="footer-col">
-            <h5>Navigation</h5>
-            <ul className="footer-links">
+          <div>
+            <h5 style={{ fontSize: '12px', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.06em', color: '#0F172A', marginBottom: '14px' }}>
+              Navigation
+            </h5>
+            <ul style={{ listStyle: 'none', padding: 0, margin: 0, display: 'flex', flexDirection: 'column', gap: '8px' }}>
               <li>
-                <a href="#home" onClick={(e) => { e.preventDefault(); onNavigatePage('home'); }}>
-                  Home Page
+                <a href="#home" onClick={(e) => { e.preventDefault(); onNavigatePage('home'); }} style={{ color: '#475569', textDecoration: 'none' }}>
+                  Home Overview
                 </a>
               </li>
               <li>
-                <a href="#features" onClick={(e) => { e.preventDefault(); onNavigatePage('features'); }}>
+                <a href="#demo-video" onClick={(e) => { e.preventDefault(); onNavigatePage('demo'); }} style={{ color: '#15803D', fontWeight: 600, textDecoration: 'none' }}>
+                  Live Demo Video
+                </a>
+              </li>
+              <li>
+                <a href="#features" onClick={(e) => { e.preventDefault(); onNavigatePage('features'); }} style={{ color: '#475569', textDecoration: 'none' }}>
                   Features &amp; Workflow
                 </a>
               </li>
               <li>
-                <a href="#printer" onClick={(e) => { e.preventDefault(); onNavigatePage('printer'); }}>
+                <a href="#printer" onClick={(e) => { e.preventDefault(); onNavigatePage('printer'); }} style={{ color: '#475569', textDecoration: 'none' }}>
                   Thermal Print Test
                 </a>
               </li>
               <li>
-                <a href="#downloads" onClick={(e) => { e.preventDefault(); onNavigatePage('downloads'); }}>
+                <a href="#downloads" onClick={(e) => { e.preventDefault(); onNavigatePage('downloads'); }} style={{ color: '#475569', textDecoration: 'none' }}>
                   Downloads &amp; Hardware
                 </a>
               </li>
               <li>
-                <a href="#faq" onClick={(e) => { e.preventDefault(); onNavigatePage('faq'); }}>
-                  Frequently Asked Questions
+                <a href="#faq" onClick={(e) => { e.preventDefault(); onNavigatePage('faq'); }} style={{ color: '#475569', textDecoration: 'none' }}>
+                  FAQ &amp; Architecture
                 </a>
               </li>
             </ul>
           </div>
 
           {/* Col 3: Direct Downloads */}
-          <div className="footer-col">
-            <h5>Free Downloads</h5>
-            <ul className="footer-links">
-              <li><a href="downloads/Billing_Pro_POS_Setup_v1.0.0.exe" download>Windows PC Setup (.EXE)</a></li>
-              <li><a href="downloads/Billing_Pro_v1.0.apk" download>Android Mobile (.APK)</a></li>
+          <div>
+            <h5 style={{ fontSize: '12px', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.06em', color: '#0F172A', marginBottom: '14px' }}>
+              Free Downloads
+            </h5>
+            <ul style={{ listStyle: 'none', padding: 0, margin: 0, display: 'flex', flexDirection: 'column', gap: '8px' }}>
               <li>
-                <a href="#downloads" onClick={(e) => { e.preventDefault(); onNavigatePage('downloads'); }}>
-                  Hardware Comparison
+                <a href="downloads/Billing_Pro_POS_Setup_v1.0.0.exe" download style={{ color: '#0F172A', fontWeight: 700, textDecoration: 'none' }}>
+                  Windows PC Setup (.EXE)
                 </a>
               </li>
               <li>
-                <a href="#printer" onClick={(e) => { e.preventDefault(); onNavigatePage('printer'); }}>
-                  Thermal Receipt Test
+                <a href="downloads/Billing_Pro_v1.0.apk" download style={{ color: '#15803D', fontWeight: 700, textDecoration: 'none' }}>
+                  Android Mobile App (.APK)
+                </a>
+              </li>
+              <li>
+                <a href="#downloads" onClick={(e) => { e.preventDefault(); onNavigatePage('downloads'); }} style={{ color: '#475569', textDecoration: 'none' }}>
+                  Hardware Matrix
+                </a>
+              </li>
+              <li>
+                <a href="#printer" onClick={(e) => { e.preventDefault(); onNavigatePage('printer'); }} style={{ color: '#475569', textDecoration: 'none' }}>
+                  ESC/POS Simulator
                 </a>
               </li>
             </ul>
           </div>
 
           {/* Col 4: Hardware Support */}
-          <div className="footer-col">
-            <h5>Hardware Support</h5>
-            <ul className="footer-links">
-              <li><a href="#printer" onClick={(e) => { e.preventDefault(); onNavigatePage('printer'); }}>2-Inch (58mm) Printers</a></li>
-              <li><a href="#printer" onClick={(e) => { e.preventDefault(); onNavigatePage('printer'); }}>3-Inch (80mm) Printers</a></li>
-              <li><a href="#downloads" onClick={(e) => { e.preventDefault(); onNavigatePage('downloads'); }}>USB &amp; Bluetooth Thermal</a></li>
-              <li><a href="#downloads" onClick={(e) => { e.preventDefault(); onNavigatePage('downloads'); }}>Automatic Cash Drawers</a></li>
-              <li><a href="#downloads" onClick={(e) => { e.preventDefault(); onNavigatePage('downloads'); }}>Barcode &amp; QR Scanners</a></li>
+          <div>
+            <h5 style={{ fontSize: '12px', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.06em', color: '#0F172A', marginBottom: '14px' }}>
+              Hardware Setup
+            </h5>
+            <ul style={{ listStyle: 'none', padding: 0, margin: 0, display: 'flex', flexDirection: 'column', gap: '8px' }}>
+              <li><span style={{ color: '#475569' }}>2-Inch (58mm) Thermal</span></li>
+              <li><span style={{ color: '#475569' }}>3-Inch (80mm) Thermal</span></li>
+              <li><span style={{ color: '#475569' }}>USB &amp; Bluetooth Receipt</span></li>
+              <li><span style={{ color: '#475569' }}>Cash Drawers (RJ11/RJ12)</span></li>
+              <li><span style={{ color: '#475569' }}>1D/2D Barcode &amp; QR Readers</span></li>
             </ul>
           </div>
 
-          {/* Col 5: Contact Us */}
-          <div className="footer-col">
-            <h5>Contact &amp; Support</h5>
-            <ul className="footer-links">
-              <li>
-                <a
-                  href="https://www.tusharjain.in/contact"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  style={{ color: '#22C55E', fontWeight: 700, display: 'inline-flex', alignItems: 'center', gap: '6px' }}
-                >
-                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                    <circle cx="12" cy="12" r="10"></circle>
-                    <line x1="12" y1="16" x2="12" y2="12"></line>
-                    <line x1="12" y1="8" x2="12.01" y2="8"></line>
-                  </svg>
-                  <span>Contact Page (tusharjain.in)</span>
-                </a>
-              </li>
+          {/* Col 5: Contact & Support */}
+          <div>
+            <h5 style={{ fontSize: '12px', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.06em', color: '#0F172A', marginBottom: '14px' }}>
+              Contact &amp; Support
+            </h5>
+            <ul style={{ listStyle: 'none', padding: 0, margin: 0, display: 'flex', flexDirection: 'column', gap: '8px' }}>
               <li>
                 <a
                   href="#contact"
@@ -139,19 +225,29 @@ export const Footer: React.FC<FooterProps> = ({
                     e.preventDefault();
                     onNavigatePage('contact');
                   }}
-                  style={{ color: '#FFFFFF', fontWeight: 600 }}
+                  style={{ color: '#15803D', fontWeight: 700, textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: '4px' }}
                 >
-                  Direct Support Hub &rarr;
+                  <span>Contact Support Hub &rarr;</span>
                 </a>
               </li>
               <li>
-                <a href="https://www.tusharjain.in" target="_blank" rel="noopener noreferrer">
+                <a
+                  href="https://www.tusharjain.in/contact"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  style={{ color: '#475569', textDecoration: 'none' }}
+                >
+                  Online Contact Form
+                </a>
+              </li>
+              <li>
+                <a
+                  href="https://www.tusharjain.in"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  style={{ color: '#475569', textDecoration: 'none' }}
+                >
                   Developer Portfolio
-                </a>
-              </li>
-              <li>
-                <a href="../USER_GUIDE.md">
-                  User Setup Guide
                 </a>
               </li>
               <li>
@@ -161,6 +257,7 @@ export const Footer: React.FC<FooterProps> = ({
                     e.preventDefault();
                     onNavigate404();
                   }}
+                  style={{ color: '#64748B', textDecoration: 'none' }}
                 >
                   Diagnostic (404 Page)
                 </a>
@@ -170,21 +267,36 @@ export const Footer: React.FC<FooterProps> = ({
 
         </div>
 
-        {/* Bottom Bar with Dynamic Current Year */}
-        <div className="footer-bottom-row">
+        {/* Bottom Row */}
+        <div
+          style={{
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+            paddingTop: '20px',
+            flexWrap: 'wrap',
+            gap: '12px',
+            fontSize: '12px',
+            color: '#64748B',
+          }}
+        >
           <div>
-            <span>&copy; {currentYear} Billing Pro POS. Developed by Tushar Jain. 100% Free &amp; Open Source Software.</span>
+            <span>&copy; {currentYear} Billing Pro POS. Engineered by <strong>Tushar Jain</strong>. 100% Free &amp; Open Source Software.</span>
           </div>
-          <div className="footer-meta-right">
-            <a
-              href="https://www.tusharjain.in/contact"
-              target="_blank"
-              rel="noopener noreferrer"
-              style={{ color: '#22C55E', fontWeight: 600, textDecoration: 'none' }}
+
+          <div style={{ display: 'flex', gap: '16px', alignItems: 'center', flexWrap: 'wrap' }}>
+            <button
+              type="button"
+              onClick={() => onNavigatePage('contact')}
+              style={{ background: 'none', border: 'none', color: '#15803D', fontWeight: 700, cursor: 'pointer', padding: 0 }}
             >
-              Contact Us &rarr;
-            </a>
-            <button type="button" onClick={onOpenCookieSettings} className="btn-cookie-manage">
+              Contact Support
+            </button>
+            <button
+              type="button"
+              onClick={onOpenCookieSettings}
+              style={{ background: 'none', border: '1px solid #CBD5E1', color: '#475569', padding: '3px 8px', fontSize: '11px', cursor: 'pointer', borderRadius: '0px' }}
+            >
               Storage Settings
             </button>
             <a
@@ -193,7 +305,7 @@ export const Footer: React.FC<FooterProps> = ({
                 e.preventDefault();
                 window.scrollTo({ top: 0, behavior: 'smooth' });
               }}
-              style={{ color: '#94A3B8', textDecoration: 'underline' }}
+              style={{ color: '#64748B', textDecoration: 'underline' }}
             >
               Back to Top &uarr;
             </a>

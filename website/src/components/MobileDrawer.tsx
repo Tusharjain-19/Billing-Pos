@@ -75,19 +75,21 @@ export const MobileDrawer: React.FC<MobileDrawerProps> = ({
           <span>Download Android App (.APK)</span>
         </a>
 
-        <a
-          href="https://www.tusharjain.in/contact"
-          target="_blank"
-          rel="noopener noreferrer"
+        <button
+          type="button"
           className="btn btn-secondary"
-          onClick={onClose}
+          onClick={() => {
+            onClose();
+            onNavigatePage('contact');
+          }}
+          style={{ width: '100%', justifyContent: 'center' }}
         >
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
             <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
             <circle cx="12" cy="7" r="4"></circle>
           </svg>
-          <span>Contact Page (tusharjain.in)</span>
-        </a>
+          <span>Contact Support Hub</span>
+        </button>
       </div>
     </div>
   );
