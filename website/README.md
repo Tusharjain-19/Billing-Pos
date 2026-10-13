@@ -20,6 +20,7 @@ This folder contains the complete, production-ready React 19 website for Billing
 - `assets/`:
   - `demo/`: Real demonstration video (`billing_pos_demo.mp4`).
   - `brand/`: Official logos and SVGs (`logo.png`, `billing-pro-logo.png`, `favicon.svg`).
+  - `screenshots/`: Real software interface screenshots (`01_rapid_billing.png` through `06_sales_leaderboard.png`).
 
 ---
 

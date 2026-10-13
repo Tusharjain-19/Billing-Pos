@@ -54,3 +54,16 @@ npm run preview
 | `F9` | Settle & Print | Opens quick settlement tender modal |
 | `F12` | Instant Cash | Settles bill with exact cash, prints receipt, auto-resets in <1s |
 | `ESC` | Dismiss | Closes active modal or dialog |
+
+---
+
+## 4. Real Software Screenshots
+
+View the authentic interface screenshots in [`docs/screenshots/`](../docs/screenshots/):
+- [**01. Rapid Billing Screen**](../docs/screenshots/01_rapid_billing.png)
+- [**02. Menu & Inventory Catalog**](../docs/screenshots/02_menu_inventory.png)
+- [**03. Sequential Invoices Ledger**](../docs/screenshots/03_invoices_ledger.png)
+- [**04. Statutory GSTR-1 Reports**](../docs/screenshots/04_statutory_gst_reports.png)
+- [**05. POS Dashboard & Velocity**](../docs/screenshots/05_pos_dashboard.png)
+- [**06. Sales Leaderboard**](../docs/screenshots/06_sales_leaderboard.png)
+

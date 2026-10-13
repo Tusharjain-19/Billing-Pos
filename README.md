@@ -2,7 +2,7 @@
 ### Enterprise Offline-First POS, Thermal Receipt Billing & Business Intelligence Platform
 
 <p align="center">
-  <img src="public/logo.png" alt="Billing Pro POS Logo" width="130" style="border-radius: 24px; box-shadow: 0 12px 32px rgba(0,0,0,0.18);" />
+  <img src="website/assets/brand/logo.png" alt="Billing Pro POS Logo" width="130" style="border-radius: 24px; box-shadow: 0 12px 32px rgba(0,0,0,0.18);" />
 </p>
 
 <p align="center">
@@ -37,7 +37,7 @@ The repository is cleanly organized into 3 core production targets:
 | ⚡ [**web app software/**](web%20app%20software/) | **Unified POS Software (Web & Desktop)** | Complete React 19 + TypeScript + Vite POS application source code, Electron Windows desktop runtime (`.exe` installer & `.zip` portable), Dexie IndexedDB engine, thermal drivers, and offline PWA assets. |
 | 📱 [**app/**](app/) | **Android Mobile & Handheld POS** | Native Android production release (`.apk`), Capacitor 8 Android Gradle project, and handheld POS (Sunmi/iMin) configurations. |
 | 🌐 [**website/**](website/) | **Marketing & Web Portal** | Public landing page, product showcases, thermal simulator, demo video player, and direct `.exe` / `.apk` download hub. |
-| 🛠️ [**scripts/**](scripts/) | **Automation & Build Tools** | Asset generation, packaging scripts, voiceover tools, and deployment utilities. |
+| 🛠️ [**scripts/**](scripts/) | **Automation & Build Tools** | Asset generation, packaging scripts, and deployment utilities. |
 
 ---
 
@@ -69,12 +69,70 @@ Download the latest production-ready packages for your device:
 Watch Billing Pro POS in action — featuring high-speed order punching, instant category navigation, dynamic UPI QR settlement, and thermal receipt printing:
 
 <div align="center">
-  <video src="docs/demo/billing_pos_demo.mp4" controls="controls" muted="muted" style="max-width: 100%; border-radius: 14px; border: 1.5px solid #334155; box-shadow: 0 16px 40px rgba(0,0,0,0.35);" width="860">
-    <p>Your browser does not support HTML5 video. <a href="docs/demo/billing_pos_demo.mp4">Click here to download and view the demo video</a>.</p>
+  <video src="billing%20pos%20demo.mp4" controls="controls" muted="muted" style="max-width: 100%; border: 1.5px solid #D1D5DB; box-shadow: 0 16px 40px rgba(0,0,0,0.12);" width="860">
+    <p>Your browser does not support HTML5 video. <a href="billing%20pos%20demo.mp4">Click here to download and view the demo video</a>.</p>
   </video>
   <br>
-  <sub><i>Video: Live demonstration of cashier billing station, order fulfillment, and report generation.</i></sub>
+  <sub><i>Video: Live 1080p demonstration of cashier billing station, order fulfillment, and report generation in Light Mode.</i></sub>
 </div>
+
+---
+
+## 📸 Real Software Screenshots & Interface Walkthrough
+
+Billing Pro POS features 100% authentic, high-contrast industrial interfaces designed strictly according to [`DESIGN.md`](DESIGN.md):
+
+### 1. Rapid Counter Billing Station & Live Cart Docket
+Tap dishes across categorized touch matrices, select item modifiers, customize parcel packaging charges, and observe real-time CGST/SGST tax computations.
+
+<p align="center">
+  <img src="docs/screenshots/01_rapid_billing.png" alt="Rapid Counter Billing Station" width="100%" />
+</p>
+
+---
+
+### 2. Menu Items & Product Inventory Catalog
+Manage dish base rates, selling prices, real-time stock decrement thresholds, GST tax slabs (0%, 5%, 12%, 18%), HSN codes, and bulk Excel imports/exports.
+
+<p align="center">
+  <img src="docs/screenshots/02_menu_inventory.png" alt="Menu Items and Inventory Manager" width="100%" />
+</p>
+
+---
+
+### 3. Invoices Ledger & Sequential Audit Trail
+Immutable sequential invoice records (`B2627-000001` through `B2627-000014`), payment mode breakdown (Cash, Card, Dynamic Bharat UPI), reprint triggers, and one-click Excel/PDF exports.
+
+<p align="center">
+  <img src="docs/screenshots/03_invoices_ledger.png" alt="Invoices and Bill History Ledger" width="100%" />
+</p>
+
+---
+
+### 4. Sales & Statutory GST Audit Report (GSTR-1 Ready)
+Complete tax compliance with Gross Sales vs Output GST breakout, Taxable Base, Average Order Value (AOV), Operational Ratios, Pareto 80/20 law, and daily revenue curves.
+
+<p align="center">
+  <img src="docs/screenshots/04_statutory_gst_reports.png" alt="Statutory GST Audit Report" width="100%" />
+</p>
+
+---
+
+### 5. Executive POS Dashboard & Hourly Rush Hour Velocity
+Real-time KPI overview featuring today's revenue, order counts, average ticket size, food stock depletion forecast, and hourly ordering rush histograms.
+
+<p align="center">
+  <img src="docs/screenshots/05_pos_dashboard.png" alt="Executive POS Dashboard" width="100%" />
+</p>
+
+---
+
+### 6. Item Sales Velocity & Quantity Leaderboard
+Deep-dive product performance ranking showing unit volume share, top revenue contributors, and menu engineering metrics.
+
+<p align="center">
+  <img src="docs/screenshots/06_sales_leaderboard.png" alt="Item Sales Velocity Leaderboard" width="100%" />
+</p>
 
 ---
 
