@@ -848,7 +848,7 @@ export const MenuManager: React.FC<MenuManagerProps> = ({
 
         {/* Data Table */}
         {filteredItems.length === 0 ? (
-          /* Empty State Matching Screenshot */
+          /* Empty Catalog State */
           <div
             style={{
               backgroundColor: '#FFFFFF',

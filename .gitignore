@@ -20,6 +20,11 @@ dist-ssr
 *.blockmap
 release/
 release-pc/
+website/downloads/
+pc software/win-unpacked/
+pc software/Billing-Pro-POS-win32-x64/
+web app software/node_modules/
+web app software/dist/
 public/*.apk
 public/*.aab
 mobile/android/.gradle/

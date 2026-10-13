@@ -28,6 +28,19 @@
 
 ---
 
+## 📂 Project Directory Structure
+
+The repository is cleanly organized into 3 core production targets:
+
+| Folder | Platform / Target | Description & Deliverables |
+| :--- | :--- | :--- |
+| ⚡ [**web app software/**](web%20app%20software/) | **Unified POS Software (Web & Desktop)** | Complete React 19 + TypeScript + Vite POS application source code, Electron Windows desktop runtime (`.exe` installer & `.zip` portable), Dexie IndexedDB engine, thermal drivers, and offline PWA assets. |
+| 📱 [**app/**](app/) | **Android Mobile & Handheld POS** | Native Android production release (`.apk`), Capacitor 8 Android Gradle project, and handheld POS (Sunmi/iMin) configurations. |
+| 🌐 [**website/**](website/) | **Marketing & Web Portal** | Public landing page, product showcases, thermal simulator, demo video player, and direct `.exe` / `.apk` download hub. |
+| 🛠️ [**scripts/**](scripts/) | **Automation & Build Tools** | Asset generation, packaging scripts, voiceover tools, and deployment utilities. |
+
+---
+
 ## 📑 Repository Documentation Quick Links
 
 | Document | Purpose & Description |
@@ -35,6 +48,7 @@
 | 📖 [**USER_GUIDE.md**](USER_GUIDE.md) | **Step-by-Step Operator Manual**: Cashier workflows, 58mm/80mm Bluetooth printer setup, order holding, dynamic UPI QR settlements, and daily closing procedures. |
 | ⚖️ [**LEGAL.md**](LEGAL.md) | **Commercial Licensing & IP Protection**: Commercial terms, ownership rights, anti-reverse engineering restrictions, and liability disclaimers. |
 | 🛡️ [**SECURITY.md**](SECURITY.md) | **Security Architecture & Offline Privacy**: Air-gapped database sandboxing, terminal hardening, and zero cloud data leakage guarantees. |
+| 📐 [**DESIGN.md**](DESIGN.md) | **Industrial UI/UX Architecture**: 0px border-radius standard, non-AI color system, native typography, and cash register ergonomics. |
 
 ---
 
@@ -64,44 +78,14 @@ Watch Billing Pro POS in action — featuring high-speed order punching, instant
 
 ---
 
-## 📸 Realistic System Screenshots & Business Figures
+## 💡 Core Business Capabilities & Figures
 
-<div align="center">
-
-### 1. ⚡ High-Speed POS Cashier Billing Station
-*Dual-pane cashier station showing real-time menu items (Masala Chai ₹20, Paneer Tikka ₹180, Cold Coffee ₹70), live stock counters (14 left), fulfillment selectors (Dine In / Takeaway / Delivery), custom discount inputs, and active cart docket.*
-<br><br>
-<img src="docs/screenshots/pos_billing.png" alt="POS Billing Station" width="95%" style="border-radius: 12px; border: 1px solid #334155; box-shadow: 0 10px 25px rgba(0,0,0,0.3);" />
-
-<br><br>
-
-### 2. 📊 Executive Financial Analytics & Business Intelligence Dashboard
-*Visualizing realistic business figures: ₹48,250 gross revenue, 142 daily orders, ₹340 average ticket size, payment mode distribution (Cash 45%, UPI 42%, Card 13%), top selling dishes, and peak sales hours.*
-<br><br>
-<img src="docs/screenshots/pos_dashboard.png" alt="POS Executive Dashboard" width="95%" style="border-radius: 12px; border: 1px solid #334155; box-shadow: 0 10px 25px rgba(0,0,0,0.3);" />
-
-<br><br>
-
-### 3. 🍲 Menu & Inventory Catalog Manager
-*Product management catalog with stock indicators, base rates vs selling prices, GST tax slabs (0%, 5%, 12%, 18%), HSN codes, and bulk Excel import/export.*
-<br><br>
-<img src="docs/screenshots/menu_manager.png" alt="Menu & Catalog Manager" width="95%" style="border-radius: 12px; border: 1px solid #334155; box-shadow: 0 10px 25px rgba(0,0,0,0.3);" />
-
-<br><br>
-
-### 4. 🧾 Invoices, Audit Trail & Bill Revision History
-*Comprehensive audit history of settled, held, and cancelled invoices with date range filters, reprint triggers, payment status indicators, and GST compliance logging.*
-<br><br>
-<img src="docs/screenshots/invoices_history.png" alt="Invoices and History" width="95%" style="border-radius: 12px; border: 1px solid #334155; box-shadow: 0 10px 25px rgba(0,0,0,0.3);" />
-
-<br><br>
-
-### 5. 📱 Handheld Mobile POS View (Smartphones & Handheld Terminals)
-*Ergonomic mobile layout with bottom navigation tabs, slide-up cart drawer, tactile touch targets, and wireless Bluetooth printer connectivity.*
-<br><br>
-<img src="docs/screenshots/mobile_pos.png" alt="Handheld Mobile POS View" width="420" style="border-radius: 20px; border: 1px solid #334155; box-shadow: 0 10px 25px rgba(0,0,0,0.3);" />
-
-</div>
+Billing Pro POS provides real-world figures and workflows suited for high-volume retail and restaurant operations:
+- **Cashier Billing Station**: Rapid billing with live menu items (Masala Chai ₹20, Paneer Tikka ₹180, Cold Coffee ₹70), live stock counters, order fulfillment selectors (Dine In / Takeaway / Delivery), custom discount inputs, and split payments.
+- **Financial Analytics & Dashboard**: Clear sales insights—daily revenue, order volume, average ticket size, payment mode split (Cash, Bharat UPI QR, Card), top selling dishes, and peak rush hours.
+- **Menu & Inventory Catalog**: Stock indicators, cost rates vs selling prices, GST tax slabs (0%, 5%, 12%, 18%), HSN codes, and bulk CSV/Excel import/export.
+- **Invoices & Bill History**: Settled, held, and cancelled invoices with date range filters, reprint triggers, payment status, and GST compliance.
+- **Mobile POS on Smartphones & Handhelds**: Dedicated layout with bottom navigation tabs, slide-up cart drawer, large tactile touch targets, and wireless Bluetooth printer connectivity.
 
 ---
 
